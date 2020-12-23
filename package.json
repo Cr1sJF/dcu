@@ -1,0 +1,108 @@
+{
+  "name": "dcu",
+  "displayName": "dcu_helper",
+  "description": "Interfaz para subir codigo a OCC y/o migrar layouts entre ambientes",
+  "version": "0.0.1",
+  "enableProposedApi": true,
+  "engines": {
+    "vscode": "^1.52.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "workspaceContains:**/.ccc"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "dcu.init",
+        "title": "Init DCU"
+      }
+    ],
+    "productIconTheme": [
+      {
+        "id": "dcuicons",
+        "label": "DCU",
+        "path": "./producticons/aliens-product-icon-theme.json"
+      }
+    ],
+    "configuration": {
+      "title": "DCU",
+      "properties": {
+        "dcu.general.updateAllInstances": {
+          "type": "boolean",
+          "default": false,
+          "description": "Si estas modificando un archivo base, actualizará automaticamente todas las intancias del widget"
+        },
+        "dcu.general.ignoreCommerceVersion": {
+          "type": "boolean",
+          "default": true,
+          "description": "Cuando se migran layouts, se agregara el comando -g para ignorar las versiones de OCC"
+        },
+        "dcu.general.focusOnWarn": {
+          "type": "boolean",
+          "default": true,
+          "description": "Hacer foco en la consola, cuando algun comando arroje un WARNING"
+        },
+        "dcu.dev.enviromentUrl": {
+          "type": "string",
+          "description": "Ingresa la URL del ambiente DEV",
+          "format": "uri"
+        },
+        "dcu.dev.key": {
+          "type": "string",
+          "description": "Ingresa la APP_KEY del ambiente DEV"
+        },
+        "dcu.test.enviromentUrl": {
+          "type": "string",
+          "description": "Ingresa la URL del ambiente TEST",
+          "format": "uri"
+        },
+        "dcu.test.key": {
+          "type": "string",
+          "description": "Ingresa la APP_KEY del ambiente TEST"
+        },
+        "dcu.stage.enviromentUrl": {
+          "type": "string",
+          "description": "Ingresa la URL del ambiente STAGE",
+          "format": "uri"
+        },
+        "dcu.stage.key": {
+          "type": "string",
+          "description": "Ingresa la APP_KEY del ambiente STAGE"
+        },
+        "dcu.prod.enviromentUrl": {
+          "type": "string",
+          "description": "Ingresa la URL del ambiente PROD",
+          "format": "uri"
+        },
+        "dcu.prod.key": {
+          "type": "string",
+          "description": "Ingresa la APP_KEY del ambiente PROD"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "node ./test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.52.0",
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^8.0.4",
+    "@types/node": "^12.11.7",
+    "eslint": "^7.15.0",
+    "glob": "^7.1.6",
+    "mocha": "^8.1.3",
+    "typescript": "^4.1.2",
+    "vscode-test": "^1.4.1"
+  },
+  "dependencies": {
+    "node-cmd": "^4.0.0",
+    "node-run-cmd": "^1.0.1"
+  }
+}

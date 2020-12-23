@@ -1,0 +1,15 @@
+{
+  "fonts": [
+    {
+      "id": "roboto",
+      "src": [
+        {
+          "path": "./Roboto-Regular.woff",
+          "format": "woff"
+        }
+      ],
+      "weight": "normal",
+      "style": "normal"
+    }
+  ]
+}
