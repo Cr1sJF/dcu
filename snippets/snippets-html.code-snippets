@@ -1,0 +1,43 @@
+{
+  "ko_if": {
+    "scope": "html",
+    "prefix": ["koif", "ko if", "ko_if", "if"],
+    "description": "if de knockout",
+    "body": ["<!-- ko if: ${1:condicion} -->", "\t $2", "<!-- /ko -->"]
+  },
+  "ko_foreach": {
+    "scope": "html",
+    "prefix": ["koforeach", "ko foreach", "ko_foreach", "foreach"],
+    "description": "foreach de knockout",
+    "body": ["<!-- ko foreach: {data: ${1:array}} -->", "\t $3", "<!-- /ko -->"]
+  },
+  "ko_with": {
+    "scope": "html",
+    "prefix": ["kowith", "ko with", "ko_with", "with"],
+    "description": "with de knockout",
+    "body": ["<!-- ko with: ${1:object} -->", "\t $2", "<!-- /ko -->"]
+  },
+  "data-bind":{
+    "scope": "html",
+    "prefix": ["db", "data-bind"],
+    "description": "data-bind",
+    "body": [" data-bind=\"$1\" "]
+  },
+  "data-bind-if":{
+    "scope": "html",
+    "prefix": ["dbif", "data-bind if", "db_if", "if"],
+    "description": "data-bind: if",
+    "body": ["if: ${1:condition}"]
+  },
+  "data-bind-options":{
+    "scope": "html",
+    "prefix": ["dbopt", "data-bind options", "db_opt", "option", "opt"],
+    "description": "data-bind: options",
+    "body": [
+      "options: ${1:observable},",
+      "optionsText: '${2:optionLabel}',",
+      "value: ${3:target},",
+      "optionsCaption: '${4:caption}'"
+  ]
+  }
+}

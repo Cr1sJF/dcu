@@ -1,0 +1,236 @@
+{
+  "occ_ext": {
+    "scope": "json",
+    "prefix": ["ext", "occ_ext", "ocs_ext"],
+    "description": "Crea la estructura para un ext.json de un Widget o SiteSetting",
+    "body": [
+      "{",
+      "\t\"createdBy\": \"${1:yourName}\",",
+      "\t\"developerID\":\"${1:yourName}\",",
+      "\t\"extensionID\": \"${2:extensionId (from occ)}\",",
+      "\t\"translations\":[",
+      "\t\t{",
+      "\t\t\t\"name\": \"${3:widget name}\",",
+      "\t\t\t\"description\": \"${3:widget name}\",",
+      "\t\t\t\"language\":\"es\"",
+      "\t\t},",
+      "\t\t{",
+      "\t\t\t\"name\": \"${3:widget name}\",",
+      "\t\t\t\"description\": \"${3:widget name}\",",
+      "\t\t\t\"language\":\"en\"",
+      "\t\t}",
+      "\t],",
+      "\t\"timeCreated\": \"$CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE\",",
+      "\t\"version\":1",
+      "}"
+    ]
+  },
+  "ocs_settings": {
+    "scope": "json",
+    "prefix": [
+      "ocs_setting",
+      "ocs_settings",
+      "occ_setting",
+      "occ_settings",
+      "setting",
+      "settings"
+    ],
+    "description": "Crea la estructura de un archivo de SETTINGS",
+    "body": [
+      "{",
+      "\t\"widgetDescriptorName\": \"${1: Setting Name}\",",
+      "\t\"titleResourceId\": \"title\",",
+      "\t\"descriptionResourceId\": \"description\",",
+      "\t//\"enableSiteSpecific\": true, Descomentar esta linea si se esta creando una siteSetting",
+      "\t\"properties\": [",
+      "\t\t$2",
+      "\t]",
+      "}"
+    ]
+  },
+  "ocs_setting_section": {
+    "scope": "json",
+    "prefix": [
+      "ocs_setting_section",
+      "occ_setting_section",
+      "setting_section",
+      "section"
+    ],
+    "description": "Crea un campo de tipo SECCION",
+    "body": [
+      "{",
+      "\t\"id\": \"${1:settingId}\",",
+      "\t\"type\": \"sectionTitleType\",",
+      "\t\"helpTextResourceId\": \"empty\",",
+      "\t\"labelResourceId\": \"${1}Lbl\"",
+      "},"
+    ]
+  },
+  "ocs_setting_string": {
+    "scope": "json",
+    "prefix": [
+      "ocs_setting_string",
+      "occ_setting_string",
+      "setting_string",
+      "string"
+    ],
+    "description": "Crea un campo de tipo STRING",
+    "body": [
+      "{",
+      "\t\"id\": \"${1:settingId}\",",
+      "\t\"name\": \"$1\",",
+      "\t\"type\": \"stringType\",",
+      "\t\"helpTextResourceId\": \"${1}Hlp\",",
+      "\t\"labelResourceId\": \"${1}Lbl\",",
+      "\t\"maxLength\": 5000",
+      "},"
+    ]
+  },
+  "ocs_setting_number": {
+    "scope": "json",
+    "prefix": [
+      "ocs_setting_number",
+      "occ_setting_number",
+      "setting_number",
+      "number"
+    ],
+    "description": "Crea un campo de tipo STRING -> NUMBER",
+    "body": [
+      "{",
+      "\t\"id\": \"${1:settingId}\",",
+      "\t\"name\": \"$1\",",
+      "\t\"type\": \"stringType\",",
+      "\t\"helpTextResourceId\": \"${1}Hlp\",",
+      "\t\"labelResourceId\": \"${1}Lbl\",",
+      "\t\"maxLength\": 5000",
+      "\t\"pattern\": \"^[1-9][0-9]?$|^100$\"",
+      "},"
+    ]
+  },
+  "ocs_setting_boolean": {
+    "scope": "json",
+    "prefix": [
+      "ocs_setting_boolean",
+      "occ_setting_boolean",
+      "setting_boolean",
+      "setting_check",
+      "bool",
+      "check"
+    ],
+    "description": "Crea un checkbox de tipo BOOLEAN",
+    "body": [
+      "{",
+      "\t\"id\": \"${1: settingId}\",",
+      "\t\"type\": \"booleanType\",",
+      "\t\"helpTextResourceId\": \"$1Hlp\",",
+      "\t\"labelResourceId\": \"$1Lbl\",",
+      "\t\"defaultValue\": ${2|true, false|}",
+      "},"
+    ]
+  },
+  "ocs_setting_multiselect": {
+    "scope": "json",
+    "prefix": [
+      "ocs_setting_multiselect",
+      "occ_setting_multiselect",
+      "setting_multiselect",
+      "setting_multiselect",
+      "multiselect"
+    ],
+    "description": "Crea una setting de tipo MULTISELECT (dropdown)",
+    "body": [
+      "{",
+      "\t\"id\": \"${1:settingId}\",",
+      "\t\"type\": \"optionType\",",
+      "\t\"helpTextResourceId\": \"$1Hlp\",",
+      "\t\"labelResourceId\": \"$1Lbl\",",
+      "\t\"required\": ${2:|true,false|},",
+      "\t\"displayAsCheckboxes\": ${3:|true,false|},",
+      "\t\"options\": [",
+      "\t\t${4: Cargar opciones (snippet option)}",
+      "\t],",
+      "\t\"defaultValue\": \"${5:Cargar valor por defecto, despues de cargar las opciones}\",",
+      "}"
+    ]
+  },
+  "ocs_setting_dropdown": {
+    "scope": "json",
+    "prefix": [
+      "ocs_setting_dropdown",
+      "occ_setting_dropdown",
+      "setting_dropdown",
+      "setting_select",
+      "dropdown",
+      "select"
+    ],
+    "description": "Crea una setting de tipo SELECT (dropdown)",
+    "body": [
+      "{",
+      "\t\"id\": \"${1:settingId}\",",
+      "\t\"type\": \"optionType\",",
+      "\t\"helpTextResourceId\": \"$1Hlp\",",
+      "\t\"labelResourceId\": \"$1Lbl\",",
+      "\t\"options\": [",
+      "\t\t${2: Cargar opciones (snippet option)}",
+      "\t],",
+      "\t\"defaultValue\": \"${3:Cargar valor por defecto, despues de cargar las opciones}\",",
+      "}"
+    ]
+  },
+  "ocs_setting_option": {
+    "scope": "json",
+    "prefix": [
+      "ocs_setting_option",
+      "occ_setting_option",
+      "setting_option",
+      "option"
+    ],
+    "description": "Crea un OPTION para una setting de tipo SELECT (dropdown)",
+    "body": [
+      "{",
+      "\t\"id\": \"${1:optionId/value}\",",
+      "\t\"value\": \"$1\",",
+      "\t\"labelResourceId\": \"$1Lbl\"",
+      "},"
+    ]
+  },
+  "ocs_setting_media": {
+    "scope": "json",
+    "prefix": [
+      "ocs_setting_media",
+      "occ_setting_media",
+      "setting_media",
+      "media"
+    ],
+    "description": "Crea un selector de MEDIA (img, file,etc)",
+    "body": [
+      "{",
+      "\t\"type\": \"mediaType\"",
+      "\t\"name\": \"${1:settingId}\",",
+      "\t\"id\": \"$1\",",
+      "\t\"helpTextResourceId\": \"$1Hlp\",",
+      "\t\"labelResourceId\": \"$1Lbl\",",
+      "}"
+    ]
+  },
+  "ocs_setting_collection": {
+    "scope": "json",
+    "prefix": [
+      "ocs_setting_collection",
+      "occ_setting_collection",
+      "setting_collection",
+      "collection"
+    ],
+    "description": "Crea un selector de COLLECTION",
+    "body": [
+      "{",
+      "\t\"id\": \"${1: settingId}\",",
+      "\t\"type\": \"collectionType\",",
+      "\t\"name\": \"$1\",",
+      "\t\"helpTextResourceId\": \"$1Hlp\",",
+      "\t\"labelResourceId\": \"$1Lbl\",",
+      "\t\"maxLength\": 5 ",
+      "}"
+    ]
+  }
+}

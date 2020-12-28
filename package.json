@@ -3,82 +3,136 @@
   "displayName": "dcu_helper",
   "description": "Interfaz para subir codigo a OCC y/o migrar layouts entre ambientes",
   "version": "0.0.1",
+  "publisher": "CristianJF",
+  "icon": "images/occ.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Cr1sJF/dcu"
+  },
   "enableProposedApi": true,
   "engines": {
     "vscode": "^1.52.0"
   },
   "categories": [
-    "Other"
+    "Other",
+    "Snippets"
   ],
   "activationEvents": [
-    "workspaceContains:**/.ccc"
+    "onStartupFinished"
   ],
   "main": "./extension.js",
   "contributes": {
+    "snippets": [
+      {
+        "language": "javascript",
+        "path": "./snippets/snippets-js.code-snippets"
+      },
+      {
+        "language": "json",
+        "path": "./snippets/snippets-json.code-snippets"
+      },
+      {
+        "language": "html",
+        "path": "./snippets/snippets-html.code-snippets"
+      }
+    ],
     "commands": [
       {
         "command": "dcu.init",
         "title": "Init DCU"
       }
     ],
-    "productIconTheme": [
-      {
-        "id": "dcuicons",
-        "label": "DCU",
-        "path": "./producticons/aliens-product-icon-theme.json"
-      }
-    ],
     "configuration": {
       "title": "DCU",
       "properties": {
-        "dcu.general.updateAllInstances": {
+        "dcu.1.general.updateAllInstances": {
           "type": "boolean",
           "default": false,
           "description": "Si estas modificando un archivo base, actualizará automaticamente todas las intancias del widget"
         },
-        "dcu.general.ignoreCommerceVersion": {
+        "dcu.1.general.ignoreCommerceVersion": {
           "type": "boolean",
           "default": true,
           "description": "Cuando se migran layouts, se agregara el comando -g para ignorar las versiones de OCC"
         },
-        "dcu.general.focusOnWarn": {
+        "dcu.1.general.focusOnWarn": {
           "type": "boolean",
           "default": true,
           "description": "Hacer foco en la consola, cuando algun comando arroje un WARNING"
         },
-        "dcu.dev.enviromentUrl": {
+        "dcu.1.general.funciones.grab": {
+          "type": "boolean",
+          "default": true,
+          "description": "Habilitar GRAB (dcu -g) de entornos"
+        },
+        "dcu.1.general.funciones.refresh": {
+          "type": "boolean",
+          "default": true,
+          "description": "Habilitar REFRESH (dcu -e) de un Componente"
+        },
+        "dcu.1.general.funciones.putFile": {
+          "type": "boolean",
+          "default": true,
+          "description": "Habilitar PUT FILE (dcu -t) de un componente"
+        },
+        "dcu.1.general.funciones.putAll": {
+          "type": "boolean",
+          "default": true,
+          "description": "Habilitar PUT ALL (dcu -m) de un componente"
+        },
+        "dcu.1.general.funciones.transferFile": {
+          "type": "boolean",
+          "default": true,
+          "description": "Habilitar TRANSFER (dcu -r) de un archivo"
+        },
+        "dcu.1.general.funciones.transferAll": {
+          "type": "boolean",
+          "default": true,
+          "description": "Habilitar TRASNFER (dcu -x) de componentes"
+        },
+        "dcu.1.general.funciones.cloneLayout": {
+          "type": "boolean",
+          "default": true,
+          "description": "Habilitar CLONE para un LAYOUT (plsu -y)"
+        },
+        "dcu.1.general.funciones.cloneAllLayouts": {
+          "type": "boolean",
+          "default": true,
+          "description": "Habilitar CLONE para todos los layouts (plsu -s)"
+        },
+        "dcu.2.dev.enviromentUrl": {
           "type": "string",
           "description": "Ingresa la URL del ambiente DEV",
           "format": "uri"
         },
-        "dcu.dev.key": {
+        "dcu.2.dev.key": {
           "type": "string",
           "description": "Ingresa la APP_KEY del ambiente DEV"
         },
-        "dcu.test.enviromentUrl": {
+        "dcu.3.test.enviromentUrl": {
           "type": "string",
           "description": "Ingresa la URL del ambiente TEST",
           "format": "uri"
         },
-        "dcu.test.key": {
+        "dcu.3.test.key": {
           "type": "string",
           "description": "Ingresa la APP_KEY del ambiente TEST"
         },
-        "dcu.stage.enviromentUrl": {
+        "dcu.4.stage.enviromentUrl": {
           "type": "string",
           "description": "Ingresa la URL del ambiente STAGE",
           "format": "uri"
         },
-        "dcu.stage.key": {
+        "dcu.4.stage.key": {
           "type": "string",
           "description": "Ingresa la APP_KEY del ambiente STAGE"
         },
-        "dcu.prod.enviromentUrl": {
+        "dcu.5.prod.enviromentUrl": {
           "type": "string",
           "description": "Ingresa la URL del ambiente PROD",
           "format": "uri"
         },
-        "dcu.prod.key": {
+        "dcu.5.prod.key": {
           "type": "string",
           "description": "Ingresa la APP_KEY del ambiente PROD"
         }
@@ -102,7 +156,6 @@
     "vscode-test": "^1.4.1"
   },
   "dependencies": {
-    "node-cmd": "^4.0.0",
-    "node-run-cmd": "^1.0.1"
+    "node-cmd": "^4.0.0"
   }
 }

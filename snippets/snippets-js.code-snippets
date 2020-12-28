@@ -1,0 +1,14 @@
+{
+  "ocs_topic_subs": {
+    "scope": "javascript",
+    "prefix": ["topic_subs", "occ_topic_subs", "subs_topic"],
+    "description": "Subscripcion a un Topic",
+    "body": ["$.Topic(${1:TopicName}).subscribe(function(data){", "\t$2", "});"]
+  },
+  "ocs_topic_publish": {
+    "scope": "javascript",
+    "prefix": ["topic_publish", "occ_topic_publish", "publish_topic"],
+    "description": "Publicar un Topic",
+    "body": ["$.Topic(${1:TopicName}).publish();"]
+  }
+}

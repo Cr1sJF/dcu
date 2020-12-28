@@ -10,8 +10,8 @@ const { isGetAccessor } = require('typescript');
 // const { createIntersectionTypeNode } = require('typescript');
 
 // const { cwd } = require('process');
+let STORAGE;
 const CONSTANTS = dcu.CONST;
-
 const grab = new DcuItem({
 	command: "dcu.grab",
 	icon: "extensions-install-count",
@@ -69,22 +69,43 @@ const migrateAllLayouts = new DcuItem({
 });
 
 
-const debug = new DcuItem({
-	command: "debug",
-	icon: "callstack-view-session",
-	show: true
-});
+// const debug = new DcuItem({
+// 	command: "debug",
+// 	icon: "callstack-view-session",
+// 	show: true
+// });
 
-function createItems() {
-	//TODO ocultar botones inactivos
-
+function showItems() {
+	if (!dcu.getConfig(CONSTANTS.CONFIG.GENERAL_FUNCTIONS, CONSTANTS.CONFIG.PROPS.FUNCTION_GRAB)) {
+		grab.hide();
+	}
+	if (!dcu.getConfig(CONSTANTS.CONFIG.GENERAL_FUNCTIONS, CONSTANTS.CONFIG.PROPS.FUNCTION_REFRESH)) {
+		updateWidget.hide();
+	}
+	if (!dcu.getConfig(CONSTANTS.CONFIG.GENERAL_FUNCTIONS, CONSTANTS.CONFIG.PROPS.FUNCTION_PUT_FILE)) {
+		putFile.hide();
+	}
+	if (!dcu.getConfig(CONSTANTS.CONFIG.GENERAL_FUNCTIONS, CONSTANTS.CONFIG.PROPS.FUNCTION_PUT_ALL)) {
+		putFolder.hide();
+	}
+	if (!dcu.getConfig(CONSTANTS.CONFIG.GENERAL_FUNCTIONS, CONSTANTS.CONFIG.PROPS.FUNCTION_TRANSFER_FILE)) {
+		transferFile.hide();
+	}
+	if (!dcu.getConfig(CONSTANTS.CONFIG.GENERAL_FUNCTIONS, CONSTANTS.CONFIG.PROPS.FUNCTION_TRANSFER_ALL)) {
+		transferFolder.hide();
+	}
+	if (!dcu.getConfig(CONSTANTS.CONFIG.GENERAL_FUNCTIONS, CONSTANTS.CONFIG.PROPS.FUNCTION_CLONE_LAYOUT)) {
+		migrateLayout.hide();
+	}
+	if (!dcu.getConfig(CONSTANTS.CONFIG.GENERAL_FUNCTIONS, CONSTANTS.CONFIG.PROPS.FUNCTION_CLONE_ALL_LAYOUTS)) {
+		migrateAllLayouts.hide();
+	}
 	//TODO A RE FUTURO -> Ocultar botones segun archivo/carpeta abierto
 };
 
 function registerCommands() {
 	vscode.commands.registerCommand("debug", async () => {
-		debug.toggleSpinIcon();
-		// debug.itemBar.color ="pass";
+		console.log(vscode.extensions.getExtension('publisher.dcu').packageJSON.version);
 	});
 
 	//LISTO
@@ -733,13 +754,17 @@ function registerCommands() {
 			callback: (res) => {
 				if (res === "CONTINUAR") {
 					dcu.info({
-						msg: CONSTANTS.MSGS.PLSU_START,
+						msg: component ? CONSTANTS.MSGS.PLSU_START : "Clonando todos los layouts en @@destEnv@@...",
 						replaceOptions: {
 							layoutName: component,
 							destEnv: dest
 						}
 					});
-					migrateLayout.toggleSpinIcon();
+					if (component) {
+						migrateLayout.toggleSpinIcon();
+					} else {
+						migrateAllLayouts.toggleSpinIcon();
+					}
 
 					let command = `plsu -n "${urlOrigin}" -k "${keyOrigin}" -d "${urlDest}" -a "${keyDest}" -t`;
 					if (component) {
@@ -753,9 +778,13 @@ function registerCommands() {
 
 					cmd.run(command, (error, data, stderr) => {
 						if (error) {
-							migrateLayout.fail();
+							if (component) {
+								migrateLayout.fail();
+							} else {
+								migrateAllLayouts.fail();
+							}
 							dcu.error({
-								msg: CONSTANTS.MSGS.PLSU_ERROR,
+								msg: command ? CONSTANTS.MSGS.PLSU_ERROR : "Error actualizando todos los layouts en @@destEnv@@",
 								replaceOptions: {
 									layoutName: component,
 									destEnv: dest
@@ -765,9 +794,13 @@ function registerCommands() {
 							return;
 						}
 
-						migrateLayout.success();
+						if (component) {
+							migrateLayout.success();
+						} else {
+							migrateAllLayouts.success();
+						}
 						dcu.success({
-							msg: CONSTANTS.MSGS.PLSU_OK,
+							msg: command ? CONSTANTS.MSGS.PLSU_OK : "Layouts actualizados correctamente en @@destEnv@@",
 							replaceOptions: {
 								layoutName: component,
 								destEnv: dest
@@ -804,9 +837,41 @@ function registerCommands() {
 /**
  * @param {vscode.ExtensionContext} context
  */
-function activate(context) {
-	registerCommands();
-	createItems();
+async function activate(context) {
+	// STORAGE = context.workspaceState;
+
+	vscode.window.showInformationMessage("Iniciando DCU...");
+	let itemBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 1);
+	itemBar.text="DEBUG";
+	// registerCommands();
+	// showItems();
+
+	// vscode.workspace.onDidChangeConfiguration((e) => {
+	// 	showItems();
+	// });
+
+	// let currentVersion = vscode.extensions.getExtension('CristianJF.dcu').packageJSON.version;
+	// if (!STORAGE.get(CONSTANTS.STORAGE.VERSION) || STORAGE.get(CONSTANTS.STORAGE.VERSION) < currentVersion) {
+	// 	STORAGE.update(CONSTANTS.STORAGE.VERSION, currentVersion);
+	// 	if (!STORAGE.get(CONSTANTS.STORAGE.SHOW_UPDATES)) {
+	// 		dcu.info({
+	// 			msg: "¿Quieres ver las mejoras de la versión " + currentVersion + "?",
+	// 			items: [CONSTANTS.SI, CONSTANTS.NO, CONSTANTS.NUNCA],
+	// 			callback: (response) => {
+	// 				STORAGE.update(CONSTANTS.STORAGE.SHOW_UPDATES, response);
+	// 				if (response === CONSTANTS.SI) {
+	// 					vscode.workspace.openTextDocument(context.extensionPath + "\\CHANGELOG.md").then((doc) => {
+	// 						vscode.window.showTextDocument(doc);
+	// 					});
+	// 				}
+	// 			}
+	// 		});
+	// 	} else if (STORAGE.get(CONSTANTS.STORAGE.SHOW_UPDATES) === CONSTANTS.SI) {
+	// 		vscode.workspace.openTextDocument(context.extensionPath + "\\CHANGELOG.md").then((doc) => {
+	// 			vscode.window.showTextDocument(doc);
+	// 		});
+	// 	}
+	// }
 }
 exports.activate = activate;
 

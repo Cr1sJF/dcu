@@ -6,6 +6,9 @@ const fs = require('fs');
 // const { env } = require('process');
 const output = vscode.window.createOutputChannel("DCU INFO");
 const CONST = {
+    SI: "SI",
+    NO: "NO",
+    NUNCA: "NUNCA",
     VALID_PATHS: ["element", "global", "snippets", "theme", "widget"],
     COMPONENTS: {
         WIDGET: "widget",
@@ -48,18 +51,31 @@ const CONST = {
         ALL: ["DEV", "TEST", "STAGE", "PROD"]
     },
     CONFIG: {
-        GENERAL: "dcu.general",
-        DEV: "dcu.dev",
-        TEST: "dcu.test",
-        STAGE: "dcu.stage",
-        PROD: "dcu.prod",
+        GENERAL: "dcu.1.general",
+        GENERAL_FUNCTIONS: "dcu.1.general.funciones",
+        DEV: "dcu.2.dev",
+        TEST: "dcu.3.test",
+        STAGE: "dcu.4.stage",
+        PROD: "dcu.5.prod",
         PROPS: {
             UPDATE_ALL_INSTANCES: "updateAllInstances",
             IGNORE_COMMERCE_VERSION: "ignoreCommerceVersion",
             ENVIROMENT_URL: "enviromentUrl",
             APP_KEY: "key",
-            FOCUS_ON_WARN: "focusOnWarn"
+            FOCUS_ON_WARN: "focusOnWarn",
+            FUNCTION_GRAB: "grab",
+            FUNCTION_REFRESH: "refresh",
+            FUNCTION_PUT_FILE: "putFile",
+            FUNCTION_PUT_ALL: "putAll",
+            FUNCTION_TRANSFER_FILE: "transferFile",
+            FUNCTION_TRANSFER_ALL: "transferAll",
+            FUNCTION_CLONE_LAYOUT: "cloneLayout",
+            FUNCTION_CLONE_ALL_LAYOUTS: "cloneAllLayouts",
         }
+    },
+    STORAGE: {
+        VERSION: "VERSION",
+        SHOW_UPDATES: "SHOW_UPDATES"
     },
     EDITORS: {
         LOG: "Log"
