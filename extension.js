@@ -1,70 +1,65 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
 const cmd = require('node-cmd');
 const dcu = require("./js/dcu");
 const DcuItem = require("./js/DcuItemBar");
 const fs = require("fs");
-const { stderr } = require('process');
-const { isGetAccessor } = require('typescript');
-// const { createIntersectionTypeNode } = require('typescript');
-
-// const { cwd } = require('process');
 let STORAGE;
 const CONSTANTS = dcu.CONST;
+
+
 const grab = new DcuItem({
 	command: "dcu.grab",
 	icon: "extensions-install-count",
-	tooltip: "grab",
+	tooltip: "Descargar ambiente",
 	show: true
 });
 
 const updateWidget = new DcuItem({
 	command: "dcu.e",
 	icon: "notebook-revert",
-	tooltip: "dcu -e",
+	tooltip: "Actualizar Widget",
 	show: true
 });
 
 const putFile = new DcuItem({
 	command: "dcu.t",
 	icon: "chevron-up",
-	tooltip: "dcu [-i] -t",
+	tooltip: "Subir archivo",
 	show: true
 });
 
 const putFolder = new DcuItem({
 	command: "dcu.m",
 	icon: "fold-up",
-	tooltip: "dcu -m",
+	tooltip: "Subir Widget",
 	show: true
 });
 
 const transferFile = new DcuItem({
 	command: "dcu.r",
 	icon: "run",
-	tooltip: "dcu -r",
+	tooltip: "Migrar archivo",
 	show: true
 });
 
 const transferFolder = new DcuItem({
 	command: "dcu.x",
 	icon: "run-all",
-	tooltip: "dcu -x",
+	tooltip: "Migrar Widget",
 	show: true
 });
 
 const migrateLayout = new DcuItem({
 	command: "plsu.y",
 	icon: "folder",
-	tooltip: "plsu -y",
+	tooltip: "Migrar Layout",
 	show: true
 });
 
 const migrateAllLayouts = new DcuItem({
 	command: "plsu.s",
 	icon: "folder-active",
-	tooltip: "plsu -s",
+	tooltip: "Migrar todos los Layouts",
 	show: true
 });
 
@@ -74,6 +69,42 @@ const migrateAllLayouts = new DcuItem({
 // 	icon: "callstack-view-session",
 // 	show: true
 // });
+
+function compare(a, b) {
+	if (a === b) {
+		return 0;
+	}
+
+	var a_components = a.split(".");
+	var b_components = b.split(".");
+
+	var len = Math.min(a_components.length, b_components.length);
+
+	// loop while the components are equal
+	for (var i = 0; i < len; i++) {
+		// A bigger than B
+		if (parseInt(a_components[i]) > parseInt(b_components[i])) {
+			return 1;
+		}
+
+		// B bigger than A
+		if (parseInt(a_components[i]) < parseInt(b_components[i])) {
+			return -1;
+		}
+	}
+
+	// If one's a prefix of the other, the longer one is greater.
+	if (a_components.length > b_components.length) {
+		return 1;
+	}
+
+	if (a_components.length < b_components.length) {
+		return -1;
+	}
+
+	// Otherwise they are the same.
+	return 0;
+}
 
 function showItems() {
 	if (!dcu.getConfig(CONSTANTS.CONFIG.GENERAL_FUNCTIONS, CONSTANTS.CONFIG.PROPS.FUNCTION_GRAB)) {
@@ -104,9 +135,9 @@ function showItems() {
 };
 
 function registerCommands() {
-	vscode.commands.registerCommand("debug", async () => {
-		console.log(vscode.extensions.getExtension('publisher.dcu').packageJSON.version);
-	});
+	// vscode.commands.registerCommand("debug", async () => {
+		
+	// });
 
 	//LISTO
 	vscode.commands.registerCommand("dcu.e", async () => {
@@ -349,11 +380,8 @@ function registerCommands() {
 
 
 		if (env) {
-			let command = "dcu -t \"" + editor.document.uri.fsPath + "\" -k " + env.key;
 			let updateAllInstances = dcu.getConfig(CONSTANTS.CONFIG.GENERAL, CONSTANTS.CONFIG.PROPS.UPDATE_ALL_INSTANCES);
-			if (updateAllInstances) {
-				command += " -i"
-			}
+			let command = `dcu ${updateAllInstances && editor.document.uri.path.indexOf("instances") == -1 ? " -i " : " "} -t "${editor.document.uri.fsPath}" -k ${env.key}`;
 
 			editor.document.save();
 			cmd.run(command, function (error, data, stderr) {
@@ -521,6 +549,14 @@ function registerCommands() {
 			placeHolder: "Seleccione el destino"
 		});
 
+		// if(dest === CONSTANTS.ENV.PROD){
+		// 	let res = await dcu.warn({
+		// 		msg: "Estas por enviar un archivo a PRODUCCIÓN, ¿Deseas continuar?",
+		// 		items: [CONSTANTS.SI, CONSTANTS.NO],
+
+		// 	})
+		// }
+
 		let fileName = path.split(pathSymbol)[path.split(pathSymbol).length - 1]
 		const envUrl = dcu.getConfig(CONSTANTS.CONFIG[dest], CONSTANTS.CONFIG.PROPS.ENVIROMENT_URL);
 		const envKey = dcu.getConfig(CONSTANTS.CONFIG[dest], CONSTANTS.CONFIG.PROPS.APP_KEY);
@@ -580,7 +616,15 @@ function registerCommands() {
 		let env, command;
 		if (editor) {
 			env = dcu.findEnvironment();
-			command = `dcu -x "${env.componentPath}" `;
+			let migrateConfig;
+			if (dcu.getConfig(CONSTANTS.CONFIG.GENERAL, CONSTANTS.CONFIG.PROPS.MIGRATE_CONFIGS) === CONSTANTS.PREGUNTAR) {
+				migrateConfig = await vscode.window.showQuickPick([CONSTANTS.SI, CONSTANTS.NO], {
+					placeHolder: "¿Migrar configuraciones del Widget?"
+				});
+			} else {
+				migrateConfig = dcu.getConfig(CONSTANTS.CONFIG.GENERAL, CONSTANTS.CONFIG.PROPS.MIGRATE_CONFIGS);
+			}
+			command = `dcu -x "${env.componentPath}" ${migrateConfig === CONSTANTS.NO ? " -o " : " "}`;
 		}
 		else {
 			if (vscode.workspace.workspaceFolders.length == 0) {
@@ -624,19 +668,27 @@ function registerCommands() {
 					});
 					env = dcu.findEnvironment(folder);
 					env.componentName = comp;
+					let migrateConfig;
+					if (dcu.getConfig(CONSTANTS.CONFIG.GENERAL, CONSTANTS.CONFIG.PROPS.MIGRATE_CONFIGS) === CONSTANTS.PREGUNTAR) {
+						migrateConfig = await vscode.window.showQuickPick([CONSTANTS.SI, CONSTANTS.NO], {
+							placeHolder: "¿Migrar configuraciones del Widget?"
+						});
+					} else {
+						migrateConfig = dcu.getConfig(CONSTANTS.CONFIG.GENERAL, CONSTANTS.CONFIG.PROPS.MIGRATE_CONFIGS);
+					}
 
 					if (comp.toUpperCase() == CONSTANTS.COMPONENTS.GLOBAL.toUpperCase() ||
 						comp.toUpperCase() == CONSTANTS.COMPONENTS.THEME.toUpperCase() ||
 						comp.toUpperCase() == CONSTANTS.COMPONENTS.SNIPPET.toUpperCase()) {
-						command = `dcu -x ${comp.toLocaleLowerCase()} `;
+						command = `dcu -x "${comp.toLocaleLowerCase()}" ${migrateConfig === CONSTANTS.NO ? " -o " : " "}`;
 					} else {
 						let folderInfo = fs.readdirSync(folder.uri.fsPath + "/element");
 						if (folderInfo.indexOf(comp) != -1) {
-							command = `dcu -x "element/${comp}" `;
+							command = `dcu -x "element/${comp}" ${migrateConfig === CONSTANTS.NO ? " -o " : " "}`;
 						} else {
 							let folderInfo = fs.readdirSync(folder.uri.fsPath + "/widget");
 							if (folderInfo.indexOf(comp) != -1) {
-								command = `dcu -x "widget/${comp}" `;
+								command = `dcu -x "widget/${comp}" ${migrateConfig === CONSTANTS.NO ? " -o " : " "}`;
 							} else {
 								dcu.error("No se encontro el componente");
 								return;
@@ -838,47 +890,40 @@ function registerCommands() {
  * @param {vscode.ExtensionContext} context
  */
 async function activate(context) {
-	// STORAGE = context.workspaceState;
+	STORAGE = context.workspaceState;
+	// STORAGE.update(CONSTANTS.STORAGE.SHOW_UPDATES,null);
+	// vscode.window.showInformationMessage("Iniciando DCU...");
+	// let itemBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 1);
+	// itemBar.text="DEBUG";
+	registerCommands();
+	showItems();
 
-	vscode.window.showInformationMessage("Iniciando DCU...");
-	let itemBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 1);
-	itemBar.text="DEBUG";
-	// registerCommands();
-	// showItems();
+	vscode.workspace.onDidChangeConfiguration((e) => {
+		showItems();
+	});
+	let currentVersion = vscode.extensions.getExtension('CrisJF.dcu-utils').packageJSON.version;
+	if (!STORAGE.get(CONSTANTS.STORAGE.VERSION) || compare(STORAGE.get(CONSTANTS.STORAGE.VERSION), currentVersion) == -1) {
+		STORAGE.update(CONSTANTS.STORAGE.VERSION, currentVersion);
 
-	// vscode.workspace.onDidChangeConfiguration((e) => {
-	// 	showItems();
-	// });
-
-	// let currentVersion = vscode.extensions.getExtension('CristianJF.dcu').packageJSON.version;
-	// if (!STORAGE.get(CONSTANTS.STORAGE.VERSION) || STORAGE.get(CONSTANTS.STORAGE.VERSION) < currentVersion) {
-	// 	STORAGE.update(CONSTANTS.STORAGE.VERSION, currentVersion);
-	// 	if (!STORAGE.get(CONSTANTS.STORAGE.SHOW_UPDATES)) {
-	// 		dcu.info({
-	// 			msg: "¿Quieres ver las mejoras de la versión " + currentVersion + "?",
-	// 			items: [CONSTANTS.SI, CONSTANTS.NO, CONSTANTS.NUNCA],
-	// 			callback: (response) => {
-	// 				STORAGE.update(CONSTANTS.STORAGE.SHOW_UPDATES, response);
-	// 				if (response === CONSTANTS.SI) {
-	// 					vscode.workspace.openTextDocument(context.extensionPath + "\\CHANGELOG.md").then((doc) => {
-	// 						vscode.window.showTextDocument(doc);
-	// 					});
-	// 				}
-	// 			}
-	// 		});
-	// 	} else if (STORAGE.get(CONSTANTS.STORAGE.SHOW_UPDATES) === CONSTANTS.SI) {
-	// 		vscode.workspace.openTextDocument(context.extensionPath + "\\CHANGELOG.md").then((doc) => {
-	// 			vscode.window.showTextDocument(doc);
-	// 		});
-	// 	}
-	// }
+		if (dcu.getConfig(CONSTANTS.CONFIG.GENERAL, CONSTANTS.CONFIG.PROPS.NOTIFY_UPDATES) === CONSTANTS.PREGUNTAR) {
+			dcu.info({
+				msg: "¿Quieres ver las mejoras de la versión " + currentVersion + "?",
+				items: [CONSTANTS.SI, CONSTANTS.NO],
+				callback: (response) => {
+					if (response === CONSTANTS.SI) {
+						vscode.env.openExternal(vscode.Uri.parse('https://marketplace.visualstudio.com/items/CrisJF.dcu-utils/changelog'));
+					}
+				}
+			});
+		} else if (dcu.getConfig(CONSTANTS.CONFIG.GENERAL, CONSTANTS.CONFIG.PROPS.NOTIFY_UPDATES) === CONSTANTS.SIEMPRE) {
+			vscode.window.showInformationMessage(`Hey! Observa las novedades de DCU UTILS`);
+			vscode.env.openExternal(vscode.Uri.parse('https://marketplace.visualstudio.com/items/CrisJF.dcu-utils/changelog'));
+		}
+	}
 }
 exports.activate = activate;
-
 // this method is called when your extension is deactivated
-function deactivate() { }
-
-module.exports = {
-	activate,
-	deactivate
+function deactivate() {
+	vscode.window.showInformationMessage("DCU Desactivado");
 }
+exports.deactivate = deactivate;

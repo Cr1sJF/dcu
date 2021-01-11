@@ -9,6 +9,8 @@ const CONST = {
     SI: "SI",
     NO: "NO",
     NUNCA: "NUNCA",
+    PREGUNTAR: "PREGUNTAR",
+    SIEMPRE: "SIEMPRE",
     VALID_PATHS: ["element", "global", "snippets", "theme", "widget"],
     COMPONENTS: {
         WIDGET: "widget",
@@ -71,6 +73,8 @@ const CONST = {
             FUNCTION_TRANSFER_ALL: "transferAll",
             FUNCTION_CLONE_LAYOUT: "cloneLayout",
             FUNCTION_CLONE_ALL_LAYOUTS: "cloneAllLayouts",
+            NOTIFY_UPDATES: "notifyUpdates",
+            MIGRATE_CONFIGS: "migrateConfigOnTransfer"
         }
     },
     STORAGE: {

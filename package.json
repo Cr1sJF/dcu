@@ -1,21 +1,19 @@
 {
-  "name": "dcu",
-  "displayName": "dcu_helper",
+  "name": "dcu-utils",
+  "displayName": "DCU UTILS",
   "description": "Interfaz para subir codigo a OCC y/o migrar layouts entre ambientes",
-  "version": "0.0.1",
-  "publisher": "CristianJF",
-  "icon": "images/occ.png",
+  "version": "0.0.3",
+  "publisher": "CrisJF",
+  "icon": "images/DCU_LOGO.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/Cr1sJF/dcu"
   },
-  "enableProposedApi": true,
   "engines": {
     "vscode": "^1.52.0"
   },
   "categories": [
-    "Other",
-    "Snippets"
+    "Other"
   ],
   "activationEvents": [
     "onStartupFinished"
@@ -24,22 +22,16 @@
   "contributes": {
     "snippets": [
       {
-        "language": "javascript",
-        "path": "./snippets/snippets-js.code-snippets"
-      },
-      {
         "language": "json",
         "path": "./snippets/snippets-json.code-snippets"
       },
       {
+        "language": "javascript",
+        "path": "./snippets/snippets-js.code-snippets"
+      },
+      {
         "language": "html",
         "path": "./snippets/snippets-html.code-snippets"
-      }
-    ],
-    "commands": [
-      {
-        "command": "dcu.init",
-        "title": "Init DCU"
       }
     ],
     "configuration": {
@@ -55,10 +47,22 @@
           "default": true,
           "description": "Cuando se migran layouts, se agregara el comando -g para ignorar las versiones de OCC"
         },
+        "dcu.1.general.migrateConfigOnTransfer": {
+          "type": "string",
+          "default": "PREGUNTAR",
+          "enum": ["PREGUNTAR","SI","NO"],
+          "description": "¿Migrar configuración de los widgets al hacer un TRANSFER?"
+        },
         "dcu.1.general.focusOnWarn": {
           "type": "boolean",
           "default": true,
           "description": "Hacer foco en la consola, cuando algun comando arroje un WARNING"
+        },
+        "dcu.1.general.notifyUpdates": {
+          "type": "string",
+          "default": "PREGUNTAR",
+          "enum": ["PREGUNTAR","SIEMPRE","NUNCA"],
+          "description": "¿Quieres ver las novedades en cada actualización?"
         },
         "dcu.1.general.funciones.grab": {
           "type": "boolean",
