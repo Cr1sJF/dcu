@@ -13,4 +13,3 @@ BETA analizador de response
 ## ADDED
 
 - Nuevo log
-- Nueva setting (Language)

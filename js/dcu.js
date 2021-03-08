@@ -433,9 +433,42 @@ module.exports = {
 
             log({ section: `END ${item.itemBar.tooltip}`, title: null, detail: null });
         });
+    },
 
+    validateVersion: function (STORAGE) {
+        let dcu = this;
+        let currentVersion = vscode.extensions.getExtension('CrisJF.dcu-utils').packageJSON.version;
+        let localVersion = STORAGE.get(CONST.STORAGE.VERSION);
+        if (!STORAGE.get(CONST.STORAGE.VERSION) || utils.compare(localVersion, currentVersion) == -1) {
+            let nextVersionId;
+            for (let i in CONST.VERSIONS.RELEASES) {
+                if (localVersion === CONST.VERSIONS.RELEASES[i].V) {
+                    nextVersionId = CONST.VERSIONS.RELEASES[Number(i) + 1] ? CONST.VERSIONS.RELEASES[Number(i) + 1].id : CONST.VERSIONS.RELEASES[Number(i)].V;
+                    break;
+                }
+            }
+            STORAGE.update(CONST.STORAGE.VERSION, currentVersion);
 
-
+            if(!nextVersionId){
+                vscode.window.showInformationMessage(`Actualizamos DCU UTILS, pero solo para corregir problemas. \n No es necesario ver las novedades`);
+            }
+            else if (nextVersionId &&(localVersion != nextVersionId) && dcu.getConfig(CONST.CONFIG.GENERAL, CONST.CONFIG.PROPS.NOTIFY_UPDATES) === CONST.PREGUNTAR) {
+                dcu.info({
+                    msg: "¿Quieres ver las mejoras de la versión " + currentVersion + "?",
+                    items: [CONST.SI, CONST.NO],
+                    callback: (response) => {
+                        if (response === CONST.SI) {
+                            vscode.env.openExternal(vscode.Uri.parse('https://marketplace.visualstudio.com/items?itemName=CrisJF.dcu-utils#' + nextVersionId));
+                        }
+                    }
+                });
+            } else if (nextVersionId && (localVersion != nextVersionId) && dcu.getConfig(CONST.CONFIG.GENERAL, CONST.CONFIG.PROPS.NOTIFY_UPDATES) === CONST.SIEMPRE) {
+                vscode.window.showInformationMessage(`Hey! Observa las novedades de DCU UTILS`);
+                setTimeout(() => {
+                    vscode.env.openExternal(vscode.Uri.parse('https://marketplace.visualstudio.com/items?itemName=CrisJF.dcu-utils#' + nextVersionId));
+                }, 3000);
+            }
+        }
     }
 
 };

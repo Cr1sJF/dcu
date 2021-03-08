@@ -619,7 +619,7 @@ function activate(context) {
 		// itemBar.text="DEBUG";
 		STORAGE = context.workspaceState;
 		registerCommands();
-		utils.validateVersion(STORAGE);
+		dcu.validateVersion(STORAGE);
 	} catch (e) {
 		vscode.window.showErrorMessage("Error activando:" + e);
 	}
