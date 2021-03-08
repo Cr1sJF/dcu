@@ -1,0 +1,129 @@
+{
+    "HOT_FIX": "HF",
+    "RELEASE": "R",
+    "SI": "SI",
+    "NO": "NO",
+    "NUNCA": "NUNCA",
+    "PREGUNTAR": "PREGUNTAR",
+    "SIEMPRE": "SIEMPRE",
+    "VALID_PATHS": ["element", "global", "snippets", "theme", "widget"],
+    "STATUS":{
+        "SUCCESS":"SUCCESS",
+        "FAIL":"FAIL"
+    },
+    "COMPONENTS": {
+        "WIDGET": "widget",
+        "GLOBAL": "global",
+        "THEME": "theme",
+        "ELEM": "element",
+        "SNIPPET": "snippets"
+    },
+    "MSGS": {
+        "GRAB_START": "Iniciando grab de @@envName@@...",
+        "GRAB_OK": "Código descargado correctamente",
+        "GRAB_ERROR": "Error descargando código de @@envName@@",
+        "PUT_START": "Subiendo @@fileName@@...",
+        "PUT_OK": "@@fileName@@ subido correctamente",
+        "PUT_ERROR": "Error subiendo el archivo @@fileName@@",
+        "PUT_ALL_START": "Subiendo @@componentName@@...",
+        "PUT_ALL_OK": "@@componentName@@ subido correctamente",
+        "PUT_ALL_ERROR": "Error subiendo los archivos de @@componentName@@",
+        "REFRESH_STRAT": "Actualizando @@componentName@@...",
+        "REFRESH_OK": "@@componentName@@ actualizado correctamente",
+        "REFRESH_ERROR": "Error actualizando @@componentName@@",
+        "TRANSFER_START": "Enviando @@componentName@@ a @@destEnv@@...",
+        "TRANSFER_OK": "@@componentName@@ enviado a @@destEnv@@ correctamente",
+        "TRANSFER_ERROR": "Error enviando @@componentName@@ a @@destEnv@@",
+        "PLSU_START": "Clonando @@layoutName@@ en @@destEnv@@...",
+        "PLSU_OK": "@@layoutName@@ actualizado correctamente en @@destEnv@@",
+        "PLSU_ERROR": "Error actualizando @@layoutName@@ en @@destEnv@@"
+    },
+    "MGS_TYPES": {
+        "INFO": "INFO",
+        "SUCCESS": "INFO",
+        "WARN": "WARN",
+        "ERROR": "ERROR"
+    },
+    "ENV": {
+        "DEV": "DEV",
+        "TEST": "TEST",
+        "STAGE": "STAGE",
+        "PROD": "PROD",
+        "ALL": ["DEV", "TEST", "STAGE", "PROD"]
+    },
+    "CONFIG": {
+        "GENERAL": "dcu.1.general",
+        "DEV": "dcu.2.dev",
+        "TEST": "dcu.3.test",
+        "STAGE": "dcu.4.stage",
+        "PROD": "dcu.5.prod",
+        "PROPS": {
+            "UPDATE_ALL_INSTANCES": "updateAllInstances",
+            "IGNORE_COMMERCE_VERSION": "ignoreCommerceVersion",
+            "ENVIROMENT_URL": "enviromentUrl",
+            "APP_KEY": "key",
+            "NOTIFY_UPDATES": "notifyUpdates",
+            "MIGRATE_CONFIGS": "migrateConfigOnTransfer",
+            "LANGUAGE":"language"
+        }
+    },
+    "STORAGE": {
+        "VERSION": "VERSION",
+        "SHOW_UPDATES": "SHOW_UPDATES"
+    },
+    "EDITORS": {
+        "LOG": "Log"
+    },
+    "VERSIONS": {
+        "RELEASES": [{
+            "V": "0.0.1",
+            "id": "100"
+        }, {
+            "V": "0.0.3",
+            "id": "110"
+        }, {
+            "V": "1.1.0",
+            "id": "110"
+        },
+        {
+            "V": "1.1.0",
+            "id": "110"
+        },{
+            "V": "2.0.0",
+            "id": "200"
+        }],
+        "FIXES": [{
+            "V": "0.0.2",
+            "id": "101"
+        },{
+            "V": "2.0.1",
+            "id": "201"
+        },{
+            "V": "2.0.2",
+            "id": "202"
+        }],
+        "ALL": [{
+            "V": "0.0.1",
+            "id": "100"
+        }, {
+            "V": "0.0.2",
+            "id": "100"
+        }, {
+            "V": "0.0.3",
+            "id": "110"
+        }, {
+            "V": "1.1.0",
+            "id": "110"
+        },{
+            "V": "2.0.0",
+            "id": "200"
+        },
+        {
+            "V": "2.0.1",
+            "id": "201"
+        },{
+            "V": "2.0.2",
+            "id": "202"
+        }]
+    }    
+}

@@ -1,90 +1,56 @@
 const vscode = require('vscode');
 const fs = require('fs');
+const { URL } = require('url');
+const DcuItemBar = require('./DcuItemBar');
+const cmd = require('node-cmd');
+const utils = require("./utils");
 // const { callbackify } = require('util');
 // const { isOptionalChain } = require('typescript');
 // const { createClassifier } = require('typescript');
 // const { env } = require('process');
 const output = vscode.window.createOutputChannel("DCU INFO");
-const CONST = {
-    SI: "SI",
-    NO: "NO",
-    NUNCA: "NUNCA",
-    PREGUNTAR: "PREGUNTAR",
-    SIEMPRE: "SIEMPRE",
-    VALID_PATHS: ["element", "global", "snippets", "theme", "widget"],
-    COMPONENTS: {
-        WIDGET: "widget",
-        GLOBAL: "global",
-        THEME: "theme",
-        ELEM: "element",
-        SNIPPET: "snippets"
-    },
-    MSGS: {
-        GRAB_START: "Iniciando grab de @@envName@@...",
-        GRAB_OK: "Código descargado correctamente",
-        GRAB_ERROR: "Error descargando código de @@envName@@",
-        PUT_START: "Subiendo @@fileName@@...",
-        PUT_OK: "@@fileName@@ subido correctamente",
-        PUT_ERROR: "Error subiendo el archivo @@fileName@@",
-        PUT_ALL_START: "Subiendo @@componentName@@...",
-        PUT_ALL_OK: "@@componentName@@ subido correctamente",
-        PUT_ALL_ERROR: "Error subiendo los archivos de @@componentName@@",
-        REFRESH_STRAT: "Actualizando @@componentName@@...",
-        REFRESH_OK: "@@componentName@@ actualizado correctamente",
-        REFRESH_ERROR: "Error actualizando @@componentName@@",
-        TRANSFER_START: "Enviando @@componentName@@ a @@destEnv@@...",
-        TRANSFER_OK: "@@componentName@@ enviado a @@destEnv@@ correctamente",
-        TRANSFER_ERROR: "Error enviando @@componentName@@ a @@destEnv@@",
-        PLSU_START: "Clonando @@layoutName@@ en @@destEnv@@...",
-        PLSU_OK: "@@layoutName@@ actualizado correctamente en @@destEnv@@",
-        PLSU_ERROR: "Error actualizando @@layoutName@@ en @@destEnv@@"
-    },
-    MGS_TYPES: {
-        INFO: "INFO",
-        SUCCESS: "INFO",
-        WARN: "WARN",
-        ERROR: "ERROR"
-    },
-    ENV: {
-        DEV: "DEV",
-        TEST: "TEST",
-        STAGE: "STAGE",
-        PROD: "PROD",
-        ALL: ["DEV", "TEST", "STAGE", "PROD"]
-    },
-    CONFIG: {
-        GENERAL: "dcu.1.general",
-        GENERAL_FUNCTIONS: "dcu.1.general.funciones",
-        DEV: "dcu.2.dev",
-        TEST: "dcu.3.test",
-        STAGE: "dcu.4.stage",
-        PROD: "dcu.5.prod",
-        PROPS: {
-            UPDATE_ALL_INSTANCES: "updateAllInstances",
-            IGNORE_COMMERCE_VERSION: "ignoreCommerceVersion",
-            ENVIROMENT_URL: "enviromentUrl",
-            APP_KEY: "key",
-            FOCUS_ON_WARN: "focusOnWarn",
-            FUNCTION_GRAB: "grab",
-            FUNCTION_REFRESH: "refresh",
-            FUNCTION_PUT_FILE: "putFile",
-            FUNCTION_PUT_ALL: "putAll",
-            FUNCTION_TRANSFER_FILE: "transferFile",
-            FUNCTION_TRANSFER_ALL: "transferAll",
-            FUNCTION_CLONE_LAYOUT: "cloneLayout",
-            FUNCTION_CLONE_ALL_LAYOUTS: "cloneAllLayouts",
-            NOTIFY_UPDATES: "notifyUpdates",
-            MIGRATE_CONFIGS: "migrateConfigOnTransfer"
+const CONST = require("./CONS/CONSTANTS.json");
+// const { isTemplateMiddle } = require('typescript');
+
+/**
+ * 
+ * @param {{
+ * data: string,
+ * error: string,
+ * sterror: string
+ * }} data 
+ * 
+ * @returns any {{
+ *  error: string,
+ * success: string,
+ * code: number
+ * }}
+ */
+function analizeResponse(data) {
+    if (data.error) {
+        return {
+            ERROR: data.error,
+            STATUS: CONST.STATUS.FAIL
         }
-    },
-    STORAGE: {
-        VERSION: "VERSION",
-        SHOW_UPDATES: "SHOW_UPDATES"
-    },
-    EDITORS: {
-        LOG: "Log"
     }
-};
+    let keywords = require("./CONS/KEYWORDS.json");
+    let response = {};
+
+    for (var key in keywords) {
+        if (data.sterror.indexOf(key) != -1) {
+            response[keywords[key]] ? response[keywords[key]] += "\n" + data.sterror : response[keywords[key]] = data.sterror;
+        }
+    }
+    response.INFO ? response.INFO += "\n" + data.data : response.INFO = data.data;
+
+    if (response.error) {
+        response.STATUS = CONST.STATUS.FAIL;
+    } else {
+        response.STATUS = CONST.STATUS.SUCCESS;
+    }
+
+    return response;
+}
 
 function findEnvironment(folder) {
     let env = {
@@ -97,7 +63,7 @@ function findEnvironment(folder) {
         componentName: "",
         componentPath: "",
         settings: "",
-        envUrl: ""
+        envUrl: null
     };
 
     let configPath;
@@ -141,33 +107,33 @@ function findEnvironment(folder) {
 
     let rawData = fs.readFileSync(configPath);
     let envConfig = JSON.parse(rawData.toString());
-    env.envUrl = envConfig.node;
+    env.envUrl = new URL(envConfig.node);
     env.occVersion = envConfig.commerceCloudVersion;
     env.dcuVersion = envConfig.packageVersion;
 
-    switch (envConfig.node) {
-        case getConfig(CONST.CONFIG.DEV, CONST.CONFIG.PROPS.ENVIROMENT_URL):
-            env.settings = CONST.CONFIG.DEV;
-            env.env = CONST.ENV.DEV
-            break;
-        case getConfig(CONST.CONFIG.TEST, CONST.CONFIG.PROPS.ENVIROMENT_URL):
-            env.settings = CONST.CONFIG.TEST;
-            env.env = CONST.ENV.TEST
-            break;
-        case getConfig(CONST.CONFIG.STAGE, CONST.CONFIG.PROPS.ENVIROMENT_URL):
-            env.settings = CONST.CONFIG.STAGE;
-            env.env = CONST.ENV.STAGE
-            break;
-        case getConfig(CONST.CONFIG.PROD, CONST.CONFIG.PROPS.ENVIROMENT_URL):
-            env.settings = CONST.CONFIG.PROD;
-            env.env = CONST.ENV.PROD
-            break;
+
+    if (getConfig(CONST.CONFIG.DEV, CONST.CONFIG.PROPS.ENVIROMENT_URL) && new URL(getConfig(CONST.CONFIG.DEV, CONST.CONFIG.PROPS.ENVIROMENT_URL)).origin === env.envUrl.origin) {
+        env.settings = CONST.CONFIG.DEV;
+        env.env = CONST.ENV.DEV;
+        env.key = getConfig(env.settings, CONST.CONFIG.PROPS.APP_KEY);
+        return env;
+    } else if (getConfig(CONST.CONFIG.TEST, CONST.CONFIG.PROPS.ENVIROMENT_URL) && new URL(getConfig(CONST.CONFIG.DEV, CONST.CONFIG.PROPS.ENVIROMENT_URL)).origin === env.envUrl.origin) {
+        env.settings = CONST.CONFIG.TEST;
+        env.env = CONST.ENV.TEST;
+        env.key = getConfig(env.settings, CONST.CONFIG.PROPS.APP_KEY);
+        return env;
+    } else if (getConfig(CONST.CONFIG.STAGE, CONST.CONFIG.PROPS.ENVIROMENT_URL) && new URL(getConfig(CONST.CONFIG.DEV, CONST.CONFIG.PROPS.ENVIROMENT_URL)).origin === env.envUrl.origin) {
+        env.settings = CONST.CONFIG.STAGE;
+        env.env = CONST.ENV.STAGE;
+        env.key = getConfig(env.settings, CONST.CONFIG.PROPS.APP_KEY);
+        return env;
+    } else if (getConfig(CONST.CONFIG.PROD, CONST.CONFIG.PROPS.ENVIROMENT_URL) && new URL(getConfig(CONST.CONFIG.DEV, CONST.CONFIG.PROPS.ENVIROMENT_URL)).origin === env.envUrl.origin) {
+        env.settings = CONST.CONFIG.PROD;
+        env.env = CONST.ENV.PROD;
+        env.key = getConfig(env.settings, CONST.CONFIG.PROPS.APP_KEY);
+        return env;
     }
-
-    env.key = getConfig(env.settings, CONST.CONFIG.PROPS.APP_KEY);
-    return env;
-
-
+    return null;
 };
 
 function replace(source, replaceWith) {
@@ -192,20 +158,39 @@ function getConfig(key, subKey) {
     }
 }
 
+function log({ section, title, detail }) {
+    if (section) {
+        output.appendLine(`################   ${section}    ##################`)
+    } if (title) {
+        output.appendLine(title);
+        let str = "";
+
+        for (let index = 0; index < title.length; index++) {
+            str += "‾";
+        }
+        output.appendLine(str);
+    } if (detail) {
+        output.appendLine("");
+        output.appendLine(detail);
+    }
+};
+
+/**
+    * Displays a notification
+    * @param {{
+    * title: String,
+    * msg: String, 
+    * replace: Object,
+    * replaceOptions: Object,
+    * type: String,
+    * detail: String,
+    * items: Array,
+    * callback: Function
+    * log: Boolean
+    * }} opt
+    */
 function putMessage(opt) {
     let msg = replace(opt.msg, opt.replaceOptions || opt.replace);
-
-    output.appendLine(`*****${opt.type}*****`);
-    output.appendLine(msg);
-    let str = "";
-
-    for (let index = 0; index < msg.length; index++) {
-        str += "‾";
-    }
-    output.appendLine(str);
-    if (opt.detail) output.appendLine(opt.detail);
-    output.appendLine(`*****/${opt.type}*****`);
-
     switch (opt.type) {
         case CONST.MGS_TYPES.INFO || CONST.MGS_TYPES.SUCCESS:
             if (opt.items && opt.callback) {
@@ -228,9 +213,6 @@ function putMessage(opt) {
             } else {
                 vscode.window.showWarningMessage(msg);
             }
-            if (getConfig(CONST.CONFIG.GENERAL, CONST.CONFIG.PROPS.FOCUS_ON_WARN) && opt.detail) {
-                output.show();
-            }
             break;
         case CONST.MGS_TYPES.ERROR:
             if (opt.items && opt.callback) {
@@ -247,55 +229,213 @@ function putMessage(opt) {
             }
             break;
     }
+
+    output.show();
 }
 
 module.exports = {
     CONST: CONST,
+
+    /**
+     * Displays an ERROR notification
+    * @param {({
+        * msg: String, 
+        * title?: String,
+        * replace?: Object,
+        * replaceOptions?: any,
+        * detail?: String,
+        * items?: Array,
+        * callback?: Function
+        * log?: Boolean = false
+        * } | string)} options
+     */
     error: function (options) {
+        let model = utils.extendObj({}, options);
         if (typeof options === "string") {
-            options = {
-                msg: options
+            model = {
+                msg: options,
+                type: CONST.MGS_TYPES.ERROR
             };
+        } else {
+            model.msg = CONST.MSGS[options.msg] ? CONST.MSGS[options.msg] : options.msg;
+            model.type = CONST.MGS_TYPES.ERROR;
         }
-        options.msg = CONST.MSGS[options.msg] ? CONST.MSGS[options.msg] : options.msg;
-        options.type = CONST.MGS_TYPES.ERROR;
-        putMessage(options);
+        putMessage(model);
     },
+
+    /**
+     * Displays an INFO notification
+     * @param {({
+        * msg: String, 
+        * title?: String,
+        * replace?: Object,
+        * replaceOptions?: any,
+        * detail?: String,
+        * items?: Array,
+        * callback?: Function
+        * log?: Boolean = false
+        * } | string)} options
+     */
     info: function (options) {
+        let model = utils.extendObj({}, options);
         if (typeof options === "string") {
-            options = {
-                msg: options
+            model = {
+                msg: options,
+                type: CONST.MGS_TYPES.INFO
             };
+        } else {
+            model.msg = CONST.MSGS[options.msg] ? CONST.MSGS[options.msg] : options.msg;
+            model.type = CONST.MGS_TYPES.INFO;
         }
-        options.msg = CONST.MSGS[options.msg] ? CONST.MSGS[options.msg] : options.msg;
-        options.type = CONST.MGS_TYPES.INFO;
-        putMessage(options);
+
+        putMessage(model);
     },
+
+    /**
+     * Displays an INFO notification
+    * @param {({
+        * msg: String, 
+        * title?: String,
+        * replace?: Object,
+        * replaceOptions?: any,
+        * detail?: String,
+        * items?: Array,
+        * callback?: Function
+        * log?: Boolean = false
+        * } | string)} options
+     */
     success: function (options) {
+        let model = utils.extendObj({}, options);
         if (typeof options === "string") {
-            options = {
-                msg: options
+            model = {
+                msg: options,
+                type: CONST.MGS_TYPES.INFO
             };
+        } else {
+            model.msg = CONST.MSGS[options.msg] ? CONST.MSGS[options.msg] : options.msg;
+            model.type = CONST.MGS_TYPES.INFO;
         }
-        options.msg = CONST.MSGS[options.msg] ? CONST.MSGS[options.msg] : options.msg;
-        options.type = CONST.MGS_TYPES.INFO;
-        putMessage(options);
+        putMessage(model);
     },
+
+    /**
+     * Displays an WARN notification
+    * @param {({
+        * msg: String, 
+        * title?: String,
+        * replace?: Object,
+        * replaceOptions?: any,
+        * detail?: String,
+        * items?: Array,
+        * callback?: Function
+        * log?: Boolean = false
+        * } | string)} options
+     */
     warn: function (options) {
+        let model = utils.extendObj({}, options);
         if (typeof options === "string") {
-            options = {
-                msg: options
+            model = {
+                msg: options,
+                type: CONST.MGS_TYPES.WARN
             };
+        } else {
+            model.msg = CONST.MSGS[options.msg] ? CONST.MSGS[options.msg] : options.msg;
+            model.type = CONST.MGS_TYPES.WARN;
         }
-        options.msg = CONST.MSGS[options.msg] ? CONST.MSGS[options.msg] : options.msg;
-        options.type = CONST.MGS_TYPES.WARN;
-        putMessage(options);
+        putMessage(model);
     },
 
     findEnvironment: findEnvironment,
     getConfig: getConfig,
     showOutput: function () {
         output.show();
+    },
+
+    /**
+     * 
+     * @param {DcuItemBar} item 
+     * @param {Object} env
+     * @param {Function} success
+     * @param {Function} error
+     * @param {Object} replacementData
+     */
+    runCommand: function (item, env, replacementData, success, fail) {
+        let API = this;
+        if (!env) {
+            env = API.findEnvironment();
+        }
+        if (true) { //setting.log.showNotifications
+            API.info({
+                msg: item.MSGS.START,
+                replace: replacementData
+            });
+        }
+        log({
+            section: item.itemBar.tooltip,
+            title: replace(item.MSGS.START, replacementData),
+            detail: `COMMAND: \n ${item.task} \n`
+        });
+
+        item.toggleSpinIcon();
+        cmd.run(`cd "${env.basePath}" & ${item.task}`, function (error, data, stderr) {
+            var taskInfo = analizeResponse({
+                data: data,
+                error: error,
+                sterror: stderr
+            });
+
+            if (taskInfo.STATUS == CONST.STATUS.SUCCESS) {
+                let detail = `***INFO*** \n ${taskInfo[CONST.MGS_TYPES.INFO]} \n ************* \n `;
+                if (taskInfo[CONST.MGS_TYPES.WARN]) {
+                    detail += ` \n ***WARNING*** \n ${taskInfo[CONST.MGS_TYPES.WARN]} \n ************* \n `;
+                }
+                log({
+                    section: null,
+                    title: replace(item.MSGS.SUCCESS, replacementData),
+                    detail: detail
+                });
+
+                API.info({
+                    msg: item.MSGS.SUCCESS,
+                    replace: replacementData
+                });
+                item.success();
+
+                if (success && typeof success === "function") {
+                    success(taskInfo);
+                }
+            } else if (taskInfo.STATUS == CONST.STATUS.FAIL) {
+                let detail = "";
+                if (taskInfo[CONST.MGS_TYPES.WARN]) {
+                    detail += ` \n ***WARNING*** \n ${taskInfo[CONST.MGS_TYPES.WARN]} \n ************* \n `;
+                }
+
+                detail += `***ERROR*** \n ${taskInfo[CONST.MGS_TYPES.ERROR]} \n ************* \n `;
+
+                log({
+                    section: null,
+                    title: replace(item.MSGS.ERROR, replacementData),
+                    detail: detail
+                });
+
+
+                API.error({
+                    msg: item.MSGS.ERROR,
+                    replace: replacementData
+                });
+                item.fail();
+
+                if (fail && typeof fail === "function") {
+                    fail(taskInfo);
+                }
+            }
+
+
+            log({ section: `END ${item.itemBar.tooltip}`, title: null, detail: null });
+        });
+
+
+
     }
 
 };
