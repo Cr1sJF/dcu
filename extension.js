@@ -2,7 +2,6 @@
 const vscode = require('vscode');
 const dcu = require("./js/dcu");
 const DcuItem = require("./js/DcuItemBar");
-const utils = require("./js/utils");
 const fs = require("fs");
 let STORAGE;
 // const CONSTANTS = JSON.parse(fs.readFileSync('./js/CONSTANTS.json', 'utf-8'));
@@ -237,7 +236,9 @@ function registerCommands() {
 
 					grab.task = `dcu -g -c -n "${node}"  -k ${key}`;
 
-					dcu.runCommand(grab, null, {
+					dcu.runCommand(grab, {
+						basePath: folder.uri.fsPath
+					}, {
 						envName: item
 					}, null, null);
 				});
