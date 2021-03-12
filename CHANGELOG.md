@@ -9,7 +9,16 @@ Refactor log
 Merge migracion layout
 BETA analizador de response
 
+## 2.1.0
+File Tracking
+
+## 2.1.1
+Hot Fix
 
 ## ADDED
 
-- Nuevo log
+- File Tracking
+
+## Fixed
+
+Error al hacer GRAB

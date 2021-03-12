@@ -22,9 +22,9 @@
         "GRAB_START": "Iniciando grab de @@envName@@...",
         "GRAB_OK": "Código descargado correctamente",
         "GRAB_ERROR": "Error descargando código de @@envName@@",
-        "PUT_START": "Subiendo @@fileName@@...",
-        "PUT_OK": "@@fileName@@ subido correctamente",
-        "PUT_ERROR": "Error subiendo el archivo @@fileName@@",
+        "PUT_START": "Subiendo @@componentName@@...",
+        "PUT_OK": "@@componentName@@ subido correctamente",
+        "PUT_ERROR": "Error subiendo @@componentName@@",
         "PUT_ALL_START": "Subiendo @@componentName@@...",
         "PUT_ALL_OK": "@@componentName@@ subido correctamente",
         "PUT_ALL_ERROR": "Error subiendo los archivos de @@componentName@@",
@@ -64,12 +64,18 @@
             "APP_KEY": "key",
             "NOTIFY_UPDATES": "notifyUpdates",
             "MIGRATE_CONFIGS": "migrateConfigOnTransfer",
-            "LANGUAGE":"language"
+            "LANGUAGE":"language",
+            "FILE_TRACKING": "enableSessionFileTracking"
         }
     },
     "STORAGE": {
         "VERSION": "VERSION",
         "SHOW_UPDATES": "SHOW_UPDATES"
+    },
+    "ITEM_TYPES":{
+        "DOWNLOAD": "DOWNLOAD",
+        "UPLOAD": "UPLOAD",
+        "MIGRATION": "MIGRATION"
     },
     "EDITORS": {
         "LOG": "Log"
@@ -91,6 +97,9 @@
         },{
             "V": "2.0.0",
             "id": "200"
+        },{
+            "V": "2.1.0",
+            "id": "210"
         }],
         "FIXES": [{
             "V": "0.0.2",
@@ -104,32 +113,52 @@
         },{
             "V": "2.0.3",
             "id": "203"
+        },
+        {
+            "V": "2.1.1",
+            "id": "211"
         }],
         "ALL": [{
             "V": "0.0.1",
-            "id": "100"
+            "id": "100",
+            "TYPE": "R"
         }, {
             "V": "0.0.2",
-            "id": "100"
+            "id": "100",
+            "TYPE": "R"
         }, {
             "V": "0.0.3",
-            "id": "110"
+            "id": "110",
+            "TYPE": "R"
         }, {
             "V": "1.1.0",
-            "id": "110"
+            "id": "110",
+            "TYPE": "R"
         },{
             "V": "2.0.0",
-            "id": "200"
+            "id": "200",
+            "TYPE": "R"
         },
         {
             "V": "2.0.1",
-            "id": "201"
+            "id": "201",
+            "TYPE": "F"
         },{
             "V": "2.0.2",
-            "id": "202"
+            "id": "202",
+            "TYPE": "F"
         },{
             "V": "2.0.3",
-            "id": "203"
+            "id": "203",
+            "TYPE": "F"
+        },{
+            "V": "2.1.0",
+            "id": "210",
+            "TYPE": "R"
+        },{
+            "V": "2.1.1",
+            "id": "211",
+            "TYPE":"F"
         }]
     }    
 }

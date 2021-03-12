@@ -2,7 +2,7 @@
   "name": "dcu-utils",
   "displayName": "DCU UTILS",
   "description": "Interfaz para subir codigo a OCC y/o migrar layouts entre ambientes",
-  "version": "2.0.3",
+  "version": "2.1.1",
   "publisher": "CrisJF",
   "icon": "images/DCU_LOGO.png",
   "repository": {
@@ -66,6 +66,11 @@
             "NUNCA"
           ],
           "description": "¿Quieres ver las novedades en cada actualización?"
+        },
+        "dcu.1.general.enableSessionFileTracking": {
+          "type": "boolean",
+          "default": true,
+          "description": "Hablitar seguimiento de archivos"
         },
         "dcu.2.dev.enviromentUrl": {
           "type": "string",

@@ -11,22 +11,26 @@ const grab = new DcuItem({
 	command: "dcu.grab",
 	icon: "extensions-install-count",
 	tooltip: "Descargar ambiente",
+	type: CONSTANTS.ITEM_TYPES.DOWNLOAD,
 	msg: {
 		start: CONSTANTS.MSGS.GRAB_START,
 		success: CONSTANTS.MSGS.GRAB_OK,
 		error: CONSTANTS.MSGS.GRAB_ERROR,
+		trackingMsg: "Descargaste el ambiente @@envName@@",
 		warn: ""
 	}
 });
 
 const updateWidget = new DcuItem({
 	command: "dcu.e",
-	icon: "fold-down",
+	icon: "extensions-sync-enabled",
 	tooltip: "Actualizar Widget",
+	type: CONSTANTS.ITEM_TYPES.DOWNLOAD,
 	msg: {
 		start: CONSTANTS.MSGS.REFRESH_STRAT,
 		success: CONSTANTS.MSGS.REFRESH_OK,
 		error: CONSTANTS.MSGS.REFRESH_ERROR,
+		trackingMsg: "Descargaste de @@envName@@: \n@@componentName@@",
 		warn: ""
 	}
 });
@@ -35,10 +39,12 @@ const putFile = new DcuItem({
 	command: "dcu.t",
 	icon: "chevron-up",
 	tooltip: "Subir archivo",
+	type: CONSTANTS.ITEM_TYPES.UPLOAD,
 	msg: {
 		start: CONSTANTS.MSGS.PUT_START,
 		success: CONSTANTS.MSGS.PUT_OK,
 		error: CONSTANTS.MSGS.PUT_ERROR,
+		trackingMsg: "Subiste a @@envName@@: \n@@fileName@@",
 		warn: ""
 	}
 });
@@ -47,10 +53,12 @@ const putFolder = new DcuItem({
 	command: "dcu.m",
 	icon: "fold-up",
 	tooltip: "Subir Widget",
+	type: CONSTANTS.ITEM_TYPES.UPLOAD,
 	msg: {
 		start: CONSTANTS.MSGS.PUT_ALL_START,
 		success: CONSTANTS.MSGS.PUT_ALL_OK,
 		error: CONSTANTS.MSGS.PUT_ALL_ERROR,
+		trackingMsg: "Subiste a @@envName@@: \n@@componentName@@",
 		warn: ""
 	}
 });
@@ -59,10 +67,12 @@ const transferFile = new DcuItem({
 	command: "dcu.r",
 	icon: "run",
 	tooltip: "Migrar archivo",
+	type: CONSTANTS.ITEM_TYPES.MIGRATION,
 	msg: {
 		start: CONSTANTS.MSGS.TRANSFER_START,
 		success: CONSTANTS.MSGS.TRANSFER_OK,
 		error: CONSTANTS.MSGS.TRANSFER_ERROR,
+		trackingMsg: "Migraste a @@destEnv@@: \n@@componentName@@",
 		warn: ""
 	}
 });
@@ -71,10 +81,12 @@ const transferFolder = new DcuItem({
 	command: "dcu.x",
 	icon: "run-all",
 	tooltip: "Migrar Widget",
+	type: CONSTANTS.ITEM_TYPES.MIGRATION,
 	msg: {
 		start: CONSTANTS.MSGS.TRANSFER_START,
 		success: CONSTANTS.MSGS.TRANSFER_OK,
 		error: CONSTANTS.MSGS.TRANSFER_ERROR,
+		trackingMsg: "Migraste a @@destEnv@@: \n@@componentName@@",
 		warn: ""
 	}
 });
@@ -83,10 +95,12 @@ const migrateLayout = new DcuItem({
 	command: "plsu.y",
 	icon: "references",
 	tooltip: "Migrar Layout",
+	type: CONSTANTS.ITEM_TYPES.MIGRATION,
 	msg: {
 		start: CONSTANTS.MSGS.PLSU_START,
 		success: CONSTANTS.MSGS.PLSU_OK,
 		error: CONSTANTS.MSGS.PLSU_ERROR,
+		trackingMsg: "Migraste a @@destEnv@@: \n@@layoutName@@",
 		warn: ""
 	}
 });
@@ -259,9 +273,16 @@ function registerCommands() {
 				let updateAllInstances = dcu.getConfig(CONSTANTS.CONFIG.GENERAL, CONSTANTS.CONFIG.PROPS.UPDATE_ALL_INSTANCES);
 				editor.document.save();
 				putFile.task = `dcu ${updateAllInstances && editor.document.uri.path.indexOf("instances") == -1 ? " -i " : " "} -t "${editor.document.uri.fsPath}" -k ${env.key}`;
-
+				let component = editor.document.uri.fsPath.split("\\");
+				let componentName;
+				CONSTANTS.VALID_PATHS.forEach((path)=>{
+					if (component.indexOf(path) != -1){
+						componentName = component.slice(component.indexOf(path)).join("/");
+					}
+				});
 				dcu.runCommand(putFile, env, {
-					fileName: env.componentName
+					fileName: componentName,
+					componentName: env.componentName
 				}, null, null);
 			}
 		});
@@ -620,7 +641,9 @@ function activate(context) {
 		// itemBar.text="DEBUG";
 		STORAGE = context.workspaceState;
 		registerCommands();
+		// STORAGE.update(CONSTANTS.STORAGE.VERSION, "2.0.3");
 		dcu.validateVersion(STORAGE);
+		dcu.initializeFileTracking();
 	} catch (e) {
 		vscode.window.showErrorMessage("Error activando:" + e);
 	}

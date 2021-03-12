@@ -9,6 +9,7 @@ const utils = require("./utils");
 // const { createClassifier } = require('typescript');
 // const { env } = require('process');
 const output = vscode.window.createOutputChannel("DCU INFO");
+let fileTracking;
 const CONST = require("./CONS/CONSTANTS.json");
 // const { isTemplateMiddle } = require('typescript');
 
@@ -350,6 +351,13 @@ module.exports = {
     showOutput: function () {
         output.show();
     },
+    initializeFileTracking: () => {
+
+        if (getConfig(CONST.CONFIG.GENERAL, CONST.CONFIG.PROPS.FILE_TRACKING)) {
+            fileTracking = vscode.window.createOutputChannel("DCU FILE TRACKING");
+            fileTracking.appendLine(`********* SESIÓN INICIADA A LAS: ${new Date().getHours()}:${new Date().getMinutes()}hs. **********`);
+        }
+    },
 
     /**
      * 
@@ -364,6 +372,7 @@ module.exports = {
         if (!env) {
             env = API.findEnvironment();
         }
+        replacementData.envName = env.env;
         if (true) { //setting.log.showNotifications
             API.info({
                 msg: item.MSGS.START,
@@ -400,6 +409,12 @@ module.exports = {
                     replace: replacementData
                 });
                 item.success();
+
+                //FILE TRACKING
+                if (fileTracking) {
+                    fileTracking.appendLine(replace(item.MSGS.TRACKING, replacementData));
+                    fileTracking.appendLine("");
+                }
 
                 if (success && typeof success === "function") {
                     success(taskInfo);
@@ -439,36 +454,58 @@ module.exports = {
         let dcu = this;
         let currentVersion = vscode.extensions.getExtension('CrisJF.dcu-utils').packageJSON.version;
         let localVersion = STORAGE.get(CONST.STORAGE.VERSION);
+        let lastVersion;
+        let lastRelease = CONST.VERSIONS.RELEASES[CONST.VERSIONS.RELEASES.length - 1];
         if (!STORAGE.get(CONST.STORAGE.VERSION) || utils.compare(localVersion, currentVersion) == -1) {
-            let nextVersionId;
-            for (let i in CONST.VERSIONS.RELEASES) {
-                if (localVersion === CONST.VERSIONS.RELEASES[i].V) {
-                    nextVersionId = CONST.VERSIONS.RELEASES[Number(i) + 1] ? CONST.VERSIONS.RELEASES[Number(i) + 1].id : CONST.VERSIONS.RELEASES[Number(i)].V;
-                    break;
-                }
-            }
-            STORAGE.update(CONST.STORAGE.VERSION, currentVersion);
-
-            if(!nextVersionId){
-                vscode.window.showInformationMessage(`Actualizamos DCU UTILS, pero solo para corregir problemas. \n No es necesario ver las novedades`);
-            }
-            else if (nextVersionId &&(localVersion != nextVersionId) && dcu.getConfig(CONST.CONFIG.GENERAL, CONST.CONFIG.PROPS.NOTIFY_UPDATES) === CONST.PREGUNTAR) {
+            lastVersion = CONST.VERSIONS.ALL[CONST.VERSIONS.ALL.length - 1];
+        }
+        if (lastVersion.TYPE === "R") {
+            if (dcu.getConfig(CONST.CONFIG.GENERAL, CONST.CONFIG.PROPS.NOTIFY_UPDATES) === CONST.PREGUNTAR) {
                 dcu.info({
                     msg: "¿Quieres ver las mejoras de la versión " + currentVersion + "?",
                     items: [CONST.SI, CONST.NO],
                     callback: (response) => {
                         if (response === CONST.SI) {
-                            vscode.env.openExternal(vscode.Uri.parse('https://marketplace.visualstudio.com/items?itemName=CrisJF.dcu-utils#' + nextVersionId));
+                            vscode.env.openExternal(vscode.Uri.parse('https://marketplace.visualstudio.com/items?itemName=CrisJF.dcu-utils#' + lastVersion.id));
                         }
                     }
                 });
-            } else if (nextVersionId && (localVersion != nextVersionId) && dcu.getConfig(CONST.CONFIG.GENERAL, CONST.CONFIG.PROPS.NOTIFY_UPDATES) === CONST.SIEMPRE) {
-                vscode.window.showInformationMessage(`Hey! Observa las novedades de DCU UTILS`);
+            }
+            else if (dcu.getConfig(CONST.CONFIG.GENERAL, CONST.CONFIG.PROPS.NOTIFY_UPDATES) === CONST.SIEMPRE) {
+                vscode.window.showInformationMessage(`Hey! Mirá las novedades de DCU UTILS`);
                 setTimeout(() => {
-                    vscode.env.openExternal(vscode.Uri.parse('https://marketplace.visualstudio.com/items?itemName=CrisJF.dcu-utils#' + nextVersionId));
+                    vscode.env.openExternal(vscode.Uri.parse('https://marketplace.visualstudio.com/items?itemName=CrisJF.dcu-utils#' + lastVersion.id));
                 }, 3000);
             }
+        } else if (lastVersion.TYPE === "F") {
+            dcu.info({
+                msg: "Actualizamos DCU UTILS a la version " + currentVersion + " para corregir algunos errores. \n ¿Quieres ver las mejoras del release "+lastRelease.V+"?",
+                items: [CONST.SI, CONST.NO],
+                callback: (response) => {
+                    if (response === CONST.SI) {
+                        vscode.env.openExternal(vscode.Uri.parse('https://marketplace.visualstudio.com/items?itemName=CrisJF.dcu-utils#' + lastRelease.id));
+                    }
+                }
+            });
         }
-    }
 
+
+        // if (lastVersion.TYPE === "R") {
+        //     dcu.info({
+        //         msg: "¿Quieres ver las mejoras de la versión " + currentVersion + "?",
+        //         items: [CONST.SI, CONST.NO],
+        //         callback: (response) => {
+        //             if (response === CONST.SI) {
+        //                 vscode.env.openExternal(vscode.Uri.parse('https://marketplace.visualstudio.com/items?itemName=CrisJF.dcu-utils#' + nextRelease));
+        //             }
+        //         }
+        //     });
+        // }
+        // } else if(dcu.getConfig(CONST.CONFIG.GENERAL, CONST.CONFIG.PROPS.NOTIFY_UPDATES) === CONST.SIEMPRE) {
+        // vscode.window.showInformationMessage(`Hey! Observa las novedades de DCU UTILS`);
+        // setTimeout(() => {
+        //     vscode.env.openExternal(vscode.Uri.parse('https://marketplace.visualstudio.com/items?itemName=CrisJF.dcu-utils#' + nextRelease));
+        // }, 3000);
+
+    }
 };

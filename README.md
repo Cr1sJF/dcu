@@ -176,7 +176,25 @@ HotFix (sorry)
 ### 2.0.3
 Ups! Mala mia. No va a volver a pasar... esta semana...
 
-## IMPORTANTE
+## 2.1.0
+### Tracking de archivos
+
+Agregamos una nueva setting *"Hablitar seguimiento de archivos"*.
+Al estar encendido este check, la extensión mantendra un tracking de los archivos con los que hayas interactuado desde que abris VS Code, hasta que lo cierres (o limpies la consola).
+
+Dentro de la pestaña *OUTPUT* vas a encontrar una nueva consola, **DCU FILE TRACKING**, ahi verás reflejados los cambios que hagas
+
+
+![FileTracking](https://imgur.com/OrWyUIR.png)
+
+### Bugfix
+Habia un error al intentar hacer GRAB de un ambiente, pero ya fue solucionado
+
+## 2.1.1
+Hot fix -_-
+
+
+# IMPORTANTE
 
 Mucha gente me pregunta (Mucha gente = Luis) ***"Que pasa si estoy trabajando en dos proyectos? Como configuro urls y keys para cada uno??***
 

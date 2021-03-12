@@ -8,11 +8,13 @@ module.exports = class DucItemBar {
         this.itemBar.text = options.text || `$(${options.icon})`;
         this.itemBar.tooltip = options.tooltip || options.text;
         this.task = options.task;
+        this.type = options.type;
         this.MSGS = {
             START: options.msg.start,
             SUCCESS: options.msg.success,
             ERROR: options.msg.error,
-            WARN: options.msg.warn
+            WARN: options.msg.warn,
+            TRACKING: options.msg.trackingMsg
         };
         this.itemBar.show();
     }
