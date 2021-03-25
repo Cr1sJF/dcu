@@ -44,7 +44,7 @@ function analizeResponse(data) {
     }
     response.INFO ? response.INFO += "\n" + data.data : response.INFO = data.data;
 
-    if (response.error) {
+    if (response.ERROR) {
         response.STATUS = CONST.STATUS.FAIL;
     } else {
         response.STATUS = CONST.STATUS.SUCCESS;
