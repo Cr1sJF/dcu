@@ -38,9 +38,15 @@
       "title": "DCU",
       "properties": {
         "dcu.1.general.updateAllInstances": {
-          "type": "boolean",
-          "default": false,
-          "description": "Si estas modificando un archivo base, actualizará automaticamente todas las intancias del widget"
+          "type": "string",
+          "default": "PREGUNTAR",
+          "enum": [
+            "NUNCA",
+            "SIEMPRE",
+            "PREGUNTAR",
+            "SOLO SI ES ARCHIVO BASE"
+          ],
+          "description": "Actualizar todas las instancias del archivo a subir"
         },
         "dcu.1.general.ignoreCommerceVersion": {
           "type": "boolean",

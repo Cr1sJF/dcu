@@ -6,7 +6,8 @@
     "NUNCA": "NUNCA",
     "PREGUNTAR": "PREGUNTAR",
     "SIEMPRE": "SIEMPRE",
-    "VALID_PATHS": ["element", "global", "snippets", "theme", "widget"],
+    "SOLO_SI_BASE":"SOLO SI ES ARCHIVO BASE",
+    "VALID_PATHS": ["element", "global", "snippets", "theme", "widget","siteSettings"],
     "STATUS":{
         "SUCCESS":"SUCCESS",
         "FAIL":"FAIL"
@@ -16,7 +17,8 @@
         "GLOBAL": "global",
         "THEME": "theme",
         "ELEM": "element",
-        "SNIPPET": "snippets"
+        "SNIPPET": "snippets",
+        "SITE_SETTINGS": "siteSettings"
     },
     "MSGS": {
         "GRAB_START": "Iniciando grab de @@envName@@...",
@@ -78,7 +80,11 @@
         "MIGRATION": "MIGRATION"
     },
     "EDITORS": {
-        "LOG": "Log"
+        "LOG": "Log",
+        "LESS": "less",
+        "TEMPLATE": "template",
+        "JSON": "js",
+        "JS": "js"
     },
     "VERSIONS": {
         "RELEASES": [{

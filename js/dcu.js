@@ -190,38 +190,50 @@ function log({ section, title, detail }) {
     * log: Boolean
     * }} opt
     */
-function putMessage(opt) {
+async function putMessage(opt) {
     let msg = replace(opt.msg, opt.replaceOptions || opt.replace);
     switch (opt.type) {
         case CONST.MGS_TYPES.INFO || CONST.MGS_TYPES.SUCCESS:
-            if (opt.items && opt.callback) {
-                vscode.window.showInformationMessage(msg, opt.items[0], opt.items[1], opt.items[2]).then(function (response) {
-                    if (response) {
+            if (opt.items) {
+                let response = await vscode.window.showInformationMessage(msg, opt.items[0], opt.items[1], opt.items[2]);
+                if (response) {
+                    if (opt.callback) {
                         opt.callback(response);
+                        return;
+                    } else {
+                        return response;
                     }
-                });
+                }
             } else {
                 vscode.window.showInformationMessage(msg);
             }
             break;
         case CONST.MGS_TYPES.WARN:
-            if (opt.items && opt.callback) {
-                vscode.window.showWarningMessage(msg, opt.items[0], opt.items[1], opt.items[2]).then(function (response) {
-                    if (response) {
+            if (opt.items) {
+                let response = await vscode.window.showWarningMessage(msg, opt.items[0], opt.items[1], opt.items[2]);
+                if (response) {
+                    if (opt.callback) {
                         opt.callback(response);
+                        return;
+                    } else {
+                        return response;
                     }
-                });
+                }
             } else {
                 vscode.window.showWarningMessage(msg);
             }
             break;
         case CONST.MGS_TYPES.ERROR:
-            if (opt.items && opt.callback) {
-                vscode.window.showErrorMessage(msg, opt.items[0], opt.items[1], opt.items[2]).then(function (response) {
-                    if (response) {
+            if (opt.items) {
+                let response = await vscode.window.showErrorMessage(msg, opt.items[0], opt.items[1], opt.items[2]);
+                if (response) {
+                    if (opt.callback) {
                         opt.callback(response);
+                        return;
+                    } else {
+                        return response;
                     }
-                });
+                }
             } else {
                 vscode.window.showErrorMessage(msg);
             }
@@ -250,7 +262,7 @@ module.exports = {
         * log?: Boolean = false
         * } | string)} options
      */
-    error: function (options) {
+    error: async function (options) {
         let model = utils.extendObj({}, options);
         if (typeof options === "string") {
             model = {
@@ -261,7 +273,7 @@ module.exports = {
             model.msg = CONST.MSGS[options.msg] ? CONST.MSGS[options.msg] : options.msg;
             model.type = CONST.MGS_TYPES.ERROR;
         }
-        putMessage(model);
+        return await putMessage(model);
     },
 
     /**
@@ -277,7 +289,7 @@ module.exports = {
         * log?: Boolean = false
         * } | string)} options
      */
-    info: function (options) {
+    info: async function (options) {
         let model = utils.extendObj({}, options);
         if (typeof options === "string") {
             model = {
@@ -289,7 +301,7 @@ module.exports = {
             model.type = CONST.MGS_TYPES.INFO;
         }
 
-        putMessage(model);
+        return await putMessage(model);
     },
 
     /**
@@ -305,7 +317,7 @@ module.exports = {
         * log?: Boolean = false
         * } | string)} options
      */
-    success: function (options) {
+    success: async function (options) {
         let model = utils.extendObj({}, options);
         if (typeof options === "string") {
             model = {
@@ -316,7 +328,7 @@ module.exports = {
             model.msg = CONST.MSGS[options.msg] ? CONST.MSGS[options.msg] : options.msg;
             model.type = CONST.MGS_TYPES.INFO;
         }
-        putMessage(model);
+        return await putMessage(model);
     },
 
     /**
@@ -332,7 +344,7 @@ module.exports = {
         * log?: Boolean = false
         * } | string)} options
      */
-    warn: function (options) {
+    warn: async function (options) {
         let model = utils.extendObj({}, options);
         if (typeof options === "string") {
             model = {
@@ -343,7 +355,7 @@ module.exports = {
             model.msg = CONST.MSGS[options.msg] ? CONST.MSGS[options.msg] : options.msg;
             model.type = CONST.MGS_TYPES.WARN;
         }
-        putMessage(model);
+        return await putMessage(model);
     },
 
     findEnvironment: findEnvironment,
@@ -457,7 +469,7 @@ module.exports = {
         let lastVersion;
         let lastRelease = CONST.VERSIONS.RELEASES[CONST.VERSIONS.RELEASES.length - 1];
 
-        if(utils.compare(localVersion, currentVersion) == 0) return;
+        if (utils.compare(localVersion, currentVersion) == 0) return;
 
         if (!STORAGE.get(CONST.STORAGE.VERSION) || utils.compare(localVersion, currentVersion) == -1) {
             lastVersion = CONST.VERSIONS.ALL[CONST.VERSIONS.ALL.length - 1];
@@ -483,7 +495,7 @@ module.exports = {
             }
         } else if (lastVersion.TYPE === "F") {
             dcu.info({
-                msg: "Actualizamos DCU UTILS a la version " + currentVersion + " para corregir algunos errores. \n ¿Quieres ver las mejoras del release "+lastRelease.V+"?",
+                msg: "Actualizamos DCU UTILS a la version " + currentVersion + " para corregir algunos errores. \n ¿Quieres ver las mejoras del release " + lastRelease.V + "?",
                 items: [CONST.SI, CONST.NO],
                 callback: (response) => {
                     if (response === CONST.SI) {

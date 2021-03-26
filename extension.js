@@ -125,7 +125,8 @@ function registerCommands() {
 
 				if (env.componentName.toUpperCase() == CONSTANTS.COMPONENTS.GLOBAL.toUpperCase() ||
 					env.componentName.toUpperCase() == CONSTANTS.COMPONENTS.THEME.toUpperCase() ||
-					env.componentName.toUpperCase() == CONSTANTS.COMPONENTS.SNIPPET.toUpperCase()) {
+					env.componentName.toUpperCase() == CONSTANTS.COMPONENTS.SNIPPET.toUpperCase()||
+					env.componentName.toUpperCase() == CONSTANTS.COMPONENTS.SITE_SETTINGS.toUpperCase()) {
 					command = `dcu -e "${env.componentName}" -k ${env.key}`;
 				} else {
 					command = `dcu -e "${env.fileType}/${env.componentName}" -k ${env.key}`
@@ -263,6 +264,22 @@ function registerCommands() {
 			let editor = vscode.window.visibleTextEditors.find((editor) => {
 				return editor.document.languageId != CONSTANTS.EDITORS.LOG;
 			});
+			let filePath = editor.document.uri.path.split("/").splice(1);
+			let fileData = filePath[filePath.length - 1].split(".");
+			let file;
+			if (fileData.length > 2) {
+				file = {
+					fileName: fileData[0] +"."+ fileData[1],
+					fileExtension: fileData[2]
+				}
+			} else {
+				file = {
+					fileName: fileData[0],
+					fileExtension: fileData[1]
+				};
+			}
+
+
 			if (!editor) {
 				dcu.error("No hay editores abiertos");
 				return;
@@ -272,11 +289,37 @@ function registerCommands() {
 			if (env) {
 				let updateAllInstances = dcu.getConfig(CONSTANTS.CONFIG.GENERAL, CONSTANTS.CONFIG.PROPS.UPDATE_ALL_INSTANCES);
 				editor.document.save();
-				putFile.task = `dcu ${updateAllInstances && editor.document.uri.path.indexOf("instances") == -1 ? " -i " : " "} -t "${editor.document.uri.fsPath}" -k ${env.key}`;
+				let isBaseFile = editor.document.uri.path.indexOf("instances") != -1 ? false : true;
+				let task = "dcu ";
+				if (updateAllInstances == CONSTANTS.SIEMPRE || updateAllInstances == true) {
+					task += `-i -t "${editor.document.uri.fsPath}" -k ${env.key}`;
+				} else if (updateAllInstances == CONSTANTS.NUNCA) {
+					task += `-t "${editor.document.uri.fsPath}" -k ${env.key}`;
+				} else if (updateAllInstances == CONSTANTS.PREGUNTAR) {
+					let resp;
+					if (file.fileExtension == CONSTANTS.EDITORS.LESS
+						|| file.fileExtension == CONSTANTS.EDITORS.TEMPLATE
+						|| file.fileName.indexOf("ns.") != -1) {
+						resp = await dcu.warn({
+							msg: `Estas por subir un archivo ${isBaseFile ? "base " : "de instancia "}. ¿Quieres actualizar todas las instancias?`,
+							items: [CONSTANTS.SI, CONSTANTS.NO]
+						});
+					} else {
+						resp = CONSTANTS.NO;
+					}
+
+					task += `${resp == CONSTANTS.SI ? " -i -t " : " -t "} "${editor.document.uri.fsPath}" -k ${env.key}`;
+				} else if (updateAllInstances == CONSTANTS.SOLO_SI_BASE) {
+					task += `${isBaseFile ? " -i -t " : " -t "} "${editor.document.uri.fsPath}" -k ${env.key}`;
+				} else {
+					task += `-t "${editor.document.uri.fsPath}" -k ${env.key}`;
+				}
+
+				putFile.task = task;
 				let component = editor.document.uri.fsPath.split("\\");
 				let componentName;
-				CONSTANTS.VALID_PATHS.forEach((path)=>{
-					if (component.indexOf(path) != -1){
+				CONSTANTS.VALID_PATHS.forEach((path) => {
+					if (component.indexOf(path) != -1) {
 						componentName = component.slice(component.indexOf(path)).join("/");
 					}
 				});
@@ -644,6 +687,7 @@ function activate(context) {
 		// STORAGE.update(CONSTANTS.STORAGE.VERSION, "2.0.3");
 		dcu.validateVersion(STORAGE);
 		dcu.initializeFileTracking();
+		
 	} catch (e) {
 		vscode.window.showErrorMessage("Error activando:" + e);
 	}
