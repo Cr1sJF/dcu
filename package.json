@@ -2,7 +2,7 @@
   "name": "dcu-utils",
   "displayName": "DCU UTILS",
   "description": "Interfaz para subir codigo a OCC y/o migrar layouts entre ambientes",
-  "version": "2.1.1",
+  "version": "3.0.0",
   "publisher": "CrisJF",
   "icon": "images/DCU_LOGO.png",
   "repository": {
@@ -37,12 +37,11 @@
     "configuration": {
       "title": "DCU",
       "properties": {
-        "dcu.1.general.updateAllInstances": {
+        "dcu.1.general.updateAllInstance": {
           "type": "string",
           "default": "PREGUNTAR",
           "enum": [
             "NUNCA",
-            "SIEMPRE",
             "PREGUNTAR",
             "SOLO SI ES ARCHIVO BASE"
           ],
@@ -62,6 +61,16 @@
             "NO"
           ],
           "description": "¿Migrar configuración de los widgets al hacer un TRANSFER?"
+        },
+        "dcu.1.general.notifyActions": {
+          "type": "string",
+          "default": "SOLO ERRORES",
+          "enum": [
+            "SI",
+            "NO",
+            "SOLO ERRORES"
+          ],
+          "description": "¿Quieres ver los mensajes de los eventos?. De todas formas, se puede ver la información en el LOG."
         },
         "dcu.1.general.notifyUpdates": {
           "type": "string",
@@ -115,6 +124,53 @@
           "description": "Ingresa la APP_KEY del ambiente PROD"
         }
       }
+    },
+    "commands": [
+      {
+        "command": "dcu.e",
+        "title": "Actualizar componente (dcu -e)",
+        "category": "DCU"
+      },
+      {
+        "command": "dcu.grab",
+        "title": "Descargar ambiente (dcu -g)",
+        "category": "DCU"
+      },
+      {
+        "command": "dcu.r",
+        "title": "Migrar archivo (dcu -r)",
+        "category": "DCU"
+      },
+      {
+        "command": "dcu.x",
+        "title": "Migrar componente (dcu -x)",
+        "category": "DCU"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "dcu.grab",
+          "when": "explorerResourceIsFolder",
+          "group":" 7_modification@2"
+        },
+        {
+          "command": "dcu.e",
+          "when": "resource",
+          "group":" 7_modification@3"
+        },
+        {
+          "command": "dcu.r",
+          "when": "!explorerResourceIsFolder",
+          "group":" 7_modification@4"
+        },
+        {
+          "command": "dcu.x",
+          "when": "resource",
+          "group":" 7_modification@5"
+        }
+        
+      ]
     }
   },
   "scripts": {

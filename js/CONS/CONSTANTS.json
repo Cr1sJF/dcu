@@ -6,8 +6,11 @@
     "NUNCA": "NUNCA",
     "PREGUNTAR": "PREGUNTAR",
     "SIEMPRE": "SIEMPRE",
+    "SOLO_ERRORES": "SOLO ERRORES",
     "SOLO_SI_BASE":"SOLO SI ES ARCHIVO BASE",
     "VALID_PATHS": ["element", "global", "snippets", "theme", "widget","siteSettings"],
+    "INSTANCABLES_FILES":[".template", ".less", "ns."],
+    "UNNESTEABLE_COMPONENTS":["global", "snippets"],
     "STATUS":{
         "SUCCESS":"SUCCESS",
         "FAIL":"FAIL"
@@ -60,14 +63,15 @@
         "STAGE": "dcu.4.stage",
         "PROD": "dcu.5.prod",
         "PROPS": {
-            "UPDATE_ALL_INSTANCES": "updateAllInstances",
+            "UPDATE_ALL_INSTANCES": "updateAllInstance",
             "IGNORE_COMMERCE_VERSION": "ignoreCommerceVersion",
             "ENVIROMENT_URL": "enviromentUrl",
             "APP_KEY": "key",
             "NOTIFY_UPDATES": "notifyUpdates",
             "MIGRATE_CONFIGS": "migrateConfigOnTransfer",
             "LANGUAGE":"language",
-            "FILE_TRACKING": "enableSessionFileTracking"
+            "FILE_TRACKING": "enableSessionFileTracking",
+            "SHOW_NOTIFICATIONS":"notifyActions"
         }
     },
     "STORAGE": {
@@ -106,6 +110,10 @@
         },{
             "V": "2.1.0",
             "id": "210"
+        },
+        {
+            "V": "3.0.0",
+            "id": "300"
         }],
         "FIXES": [{
             "V": "0.0.2",
@@ -165,6 +173,10 @@
             "V": "2.1.1",
             "id": "211",
             "TYPE":"F"
+        },{
+            "V": "3.0.0",
+            "id": "300",
+            "TYPE":"R"
         }]
     }    
 }

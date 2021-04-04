@@ -22,19 +22,7 @@ Siempre que se haga referencia a un **WIDGET**, lo mismo aplica para *ELEMENTOS*
 - Node
 - Design Code Utility > 1.13
 
-## Extension Settings
 
-Si bien esta extensión posee muchas configuraciónes, no requiere mucho tiempo setear lo mínimo indispensable para su correcto funcionamiento
-
-* `dcu.general`                             : Aca se encuentran las configuraciones generales de la extension
-    * `dcu.general.updateAllInstances`      : Cuando esta opción este checkeada, al subir el archivo base de un widget, se actualizarán todas las instancias del mismo
-    * `dcu.general.ignoreCommerceVersion`   : Cuando esta opción este checkeada, se ignora la versión de OCC al momento de migrar layouts
-    * `dcu.general.migrateConfigOnTransfer` : Cuando esta opción este checkeada, al migrar un widget entre ambientes, tambien se migrará los valores de la configuración del mismo
-    * `dcu.general.notifyUpdates`           : Configura las notificaciones cuando la extension se actualice
-
-* `dcu.[ENV]`                               : La extensión posee cuatro sub-secciones para configurar las credenciales de los ambientes (DEV, TEST, STAGE, PROD)
-    * `enviromentUrl`                       : URL del ambiente asociado a la sección. **IMPORTANTE:** La url debe ser exactamente igual al formato https://XXXXXXXXENV-admin.occa.ocs.oraclecloud.com o https://ccadmin-ENV-XXXX.oracleoutsourcing.com (Finalizando en .com y no .com/)
-    * `key`                                 : APP_KEY del ambiente asociado a esta sección
 ## Known Issues
 
 Ninguno, si codeo re piola
@@ -194,6 +182,52 @@ Habia un error al intentar hacer GRAB de un ambiente, pero ya fue solucionado
 Hot fix -_-
 
 
+## 3.0.0
+
+### Administracion de notificaciones
+Puede ser medio cargoso el popup del VS Code, asi que ahora se puede configurar la frecuencia de los popups.
+
+Ahora se disponibilizó una nueva configuración para ello.
+
+![NotifSetting](https://imgur.com/PhhdAzr.png)
+
+Si la configuración se setea en "SI", el comportamiento será igual al de siempre.
+Si se setea en "NO", dejarán de mostrarse mensajes emergentes. De todos modos, persiste el log, el spinner sobre la acción y el resultado de la misma.
+
+Si se setea en "SOLO ERRORES", solo se mostrarán notificaciónes cuando se produzca un error al ejectuar el comando.
+
+**NOTA:** Esta configuración solo impacta en los mensajes al momento de ejecutar un comando, cualquier error previo (falta de configuracion, no hay archivos abiertos, etc.) se notificaran de todas formas.
+
+### Menu contextual:
+La actualización que da pie a la nueva versión de la extensión corresponde a un menú contextual (click derecho) sobre determinadas carpetas del código.
+
+Las acciones que pueden ejecutarse desde este menú (Al hacer click derecho) son:
+
+- GRAB          (dcu -g): Si se hace sobre una carpeta
+- UPDATE        (dcu -e): Si se hace sobre una carpeta o archivo
+- TRANSFER ALL  (dcu -x): Si se hace sobre una carpeta o archivo
+- TRANSFER FILE (dcu -r): Si se hace sobre un archivo
+
+![ContextFile](https://imgur.com/chpCgiG.png)
+![ContextFolder](https://imgur.com/jZVp8T0.png)
+
+Una vez seleccionada una acción, el procedimiento es exactamente igual que antes. La acción seleccionada comenzará a ejecutarse (spinner en la parte inferior derecha) y al finalizar indicara con un icono (y notificación) el estado de la misma.
+Claro está que la acción persiste en el LOG.
+
+
+### PUT de instancias mejorado
+Se modificó la configuración sobre "Actualizar todas las instancias". Previamente era solo un check, es un selector.
+Esto permite tener control sobre lo que sucede al subir un archivo.
+
+![PutInstances](https://imgur.com/78SJ70b.png)
+
+Opciones:
+
+- NUNCA:                    Jamas se agrega el la opcion -i al subir un archivo a OCC
+- PREGUNTAR:                El sistema determina si se modificó un archivo base y consultará si quieren actualizarse todas las intancias
+- SOLO SI ES ARCHIVO BASE:  Cada vez que se suba un archivo base "instanciable" (template, less o locale) se agregará la opcion -i.
+
+
 # IMPORTANTE
 
 Mucha gente me pregunta (Mucha gente = Luis) ***"Que pasa si estoy trabajando en dos proyectos? Como configuro urls y keys para cada uno??***
@@ -226,13 +260,18 @@ Al abrir un workspace, VS Code lo resaltará en las carpetas abiertas.
 **NOTA:** Si no se configuran settings por workspace (O si no se utiliza un workspace),la extensión tomará las settings a nivel User
 
 
-### Coming soon
-Como recien termine de ver el final de Wandavision, y a modo de escena post-creditos, les dejo un par de datos de lo que se viene en los proximos dias:
 
-- Administracion de notificaciones: Puede ser medio cargoso el popup del VS Code, asi que será configurable ver los mensajitos o solo ver la información en el log
+## Extension Settings
 
-- Track archivos modificados: Un nuevo log que liste los widgets modificados durante la sesión
+Si bien esta extensión posee muchas configuraciónes, no requiere mucho tiempo setear lo mínimo indispensable para su correcto funcionamiento
 
-- Menu contextual: Opciones de actualización/migracion al dar click derecho sobre alguna carpeta del grab
+* `dcu.general`                                 : Aca se encuentran las configuraciones generales de la extension
+    * `dcu.general.enableSessionFileTracking`   : Activa el log de archivos modificados
+    * `dcu.general.ignoreCommerceVersion`       : Cuando esta opción este checkeada, se ignora la versión de OCC al momento de migrar layouts
+    * `dcu.general.migrateConfigOnTransfer`     : Selecciona el comportamiento de las configuraciones del widget al migrar un widget entre ambientes.
+    * `dcu.general.notifyActions`               : Configura las notificaciones cuando se ejecutan comandos
+    * `dcu.general.notifyUpdates`               : Configura las notificaciones cuando la extension se actualice
 
-- Y otras cosas
+* `dcu.[ENV]`                               : La extensión posee cuatro sub-secciones para configurar las credenciales de los ambientes (DEV, TEST, STAGE, PROD)
+    * `enviromentUrl`                       : URL del ambiente asociado a la sección. **IMPORTANTE:** La url debe ser exactamente igual al formato https://XXXXXXXXENV-admin.occa.ocs.oraclecloud.com o https://ccadmin-ENV-XXXX.oracleoutsourcing.com (Finalizando en .com y no .com/)
+    * `key`                                 : APP_KEY del ambiente asociado a esta sección

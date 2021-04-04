@@ -15,10 +15,17 @@ File Tracking
 ## 2.1.1
 Hot Fix
 
+## 3.0.0
+Integracion con menu contextual.
+Control sobre PUT
+Control sobre notificaciones
+
 ## ADDED
 
-- File Tracking
+- Context menu
+- Settings:
+    - notifyActions
 
 ## Fixed
 
-Error al hacer GRAB
+Error al migrar un layout
