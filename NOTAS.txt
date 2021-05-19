@@ -1,0 +1,30 @@
+DCU EXTENSIONS
+
+BUGS:
+- Grab error no quita spinner -> FIXED
+- Snippet number -> FIXED
+- url env con "/" -> FIXED 
+
+IDEAS:
+
+- Nombre de componentes no caseSensitive
+- Administracion de notificaciones (Solo LOG, log y notificaciones)
+- Listar layouts a migrar
+- Semaforos en acciones
+- Confirmaciones cuando migrar a prod
+- Menu contextual en carpetas derecha
+- Soporte para rutas en grab
+- Creacion de widgets, [siteSettings], elemento
+- Agregar selector de Ambiente
+- Encapsular consultas al usuario
+- Agregar shortCuts
+- Modo serio/modo cris
+
+
+LISTO:
+- Track archivos modificados
+- Agregar snippets
+- Settings por Workspace
+- Unificar migracion de layouts (* para todos)
+- Requiere node > 12
+- Config PREGUNTAR si -i -t
