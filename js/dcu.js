@@ -333,12 +333,12 @@ module.exports = {
         componentPath: componentPath.join("/"),
         componentType: component,
         componentName: componentName,
-        fullPath: pathArray.join("/")
+        fullPath: pathArray.join("/"),
       };
     } else {
       return {
         basePath: pathArray.join("/"),
-        fullPath: pathArray.join("/")
+        fullPath: pathArray.join("/"),
       };
     }
   },
@@ -484,7 +484,10 @@ module.exports = {
    */
   runCommand: function (item, env, replacementData, success, fail) {
     let API = this;
-    let showNotif = getConfig(CONST.CONFIG.GENERAL, CONST.CONFIG.PROPS.SHOW_NOTIFICATIONS);
+    let showNotif = getConfig(
+      CONST.CONFIG.GENERAL,
+      CONST.CONFIG.PROPS.SHOW_NOTIFICATIONS
+    );
     if (!env) {
       env = API.findEnvironment();
     }
@@ -512,11 +515,13 @@ module.exports = {
         });
 
         if (taskInfo.STATUS == CONST.STATUS.SUCCESS) {
-          let detail = `***INFO*** \n ${taskInfo[CONST.MGS_TYPES.INFO]
-            } \n ************* \n `;
+          let detail = `***INFO*** \n ${
+            taskInfo[CONST.MGS_TYPES.INFO]
+          } \n ************* \n `;
           if (taskInfo[CONST.MGS_TYPES.WARN]) {
-            detail += ` \n ***WARNING*** \n ${taskInfo[CONST.MGS_TYPES.WARN]
-              } \n ************* \n `;
+            detail += ` \n ***WARNING*** \n ${
+              taskInfo[CONST.MGS_TYPES.WARN]
+            } \n ************* \n `;
           }
           log({
             section: null,
@@ -545,12 +550,14 @@ module.exports = {
         } else if (taskInfo.STATUS == CONST.STATUS.FAIL) {
           let detail = "";
           if (taskInfo[CONST.MGS_TYPES.WARN]) {
-            detail += ` \n ***WARNING*** \n ${taskInfo[CONST.MGS_TYPES.WARN]
-              } \n ************* \n `;
+            detail += ` \n ***WARNING*** \n ${
+              taskInfo[CONST.MGS_TYPES.WARN]
+            } \n ************* \n `;
           }
 
-          detail += `***ERROR*** \n ${taskInfo[CONST.MGS_TYPES.ERROR]
-            } \n ************* \n `;
+          detail += `***ERROR*** \n ${
+            taskInfo[CONST.MGS_TYPES.ERROR]
+          } \n ************* \n `;
 
           log({
             section: null,
@@ -582,8 +589,8 @@ module.exports = {
 
   validateVersion: function (STORAGE) {
     let dcu = this;
-    let currentVersion = vscode.extensions.getExtension("CrisJF.dcu-utils")
-      .packageJSON.version;
+    let currentVersion =
+      vscode.extensions.getExtension("CrisJF.dcu-utils").packageJSON.version;
     let localVersion = STORAGE.get(CONST.STORAGE.VERSION);
     let lastVersion;
     let lastRelease =
@@ -614,7 +621,7 @@ module.exports = {
               vscode.env.openExternal(
                 vscode.Uri.parse(
                   "https://marketplace.visualstudio.com/items?itemName=CrisJF.dcu-utils#" +
-                  lastVersion.id
+                    lastVersion.id
                 )
               );
             }
@@ -633,7 +640,7 @@ module.exports = {
           vscode.env.openExternal(
             vscode.Uri.parse(
               "https://marketplace.visualstudio.com/items?itemName=CrisJF.dcu-utils#" +
-              lastVersion.id
+                lastVersion.id
             )
           );
         }, 3000);
@@ -652,7 +659,7 @@ module.exports = {
             vscode.env.openExternal(
               vscode.Uri.parse(
                 "https://marketplace.visualstudio.com/items?itemName=CrisJF.dcu-utils#" +
-                lastRelease.id
+                  lastRelease.id
               )
             );
           }

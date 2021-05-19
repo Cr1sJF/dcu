@@ -152,24 +152,23 @@
         {
           "command": "dcu.grab",
           "when": "explorerResourceIsFolder",
-          "group":" 7_modification@2"
+          "group": " 7_modification@2"
         },
         {
           "command": "dcu.e",
           "when": "resource",
-          "group":" 7_modification@3"
+          "group": " 7_modification@3"
         },
         {
           "command": "dcu.r",
           "when": "!explorerResourceIsFolder",
-          "group":" 7_modification@4"
+          "group": " 7_modification@4"
         },
         {
           "command": "dcu.x",
           "when": "resource",
-          "group":" 7_modification@5"
+          "group": " 7_modification@5"
         }
-        
       ]
     }
   },
@@ -190,6 +189,8 @@
     "vscode-test": "^1.4.1"
   },
   "dependencies": {
-    "node-cmd": "^4.0.0"
+    "@rauschma/stringio": "^1.4.0",
+    "node-cmd": "^4.0.0",
+    "node-powershell": "^4.0.0"
   }
 }
