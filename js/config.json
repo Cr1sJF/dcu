@@ -1,0 +1,14 @@
+{
+	"ENDPOINTS": {
+		"LOG": {
+			"BASE_URL": "https://86c45593-8bf0-43ca-b5da-938f966c22cf.mock.pstmn.io",
+			"ERROR": "/dcu/error",
+			"FEEDBACK": {
+				"FEEDBACK": "/dcu/feedback",
+				"SUGESTION": "/dcu/feedback/sugestion",
+				"ERROR": "/dcu/feedback/error",
+				"QUESTION": "/dcu/feedback/question"
+			}
+		}
+	}
+}

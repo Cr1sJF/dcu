@@ -20,12 +20,28 @@ Integracion con menu contextual.
 Control sobre PUT
 Control sobre notificaciones
 
+## 4.0.0
+Todo nuevo, 0km
+
 ## ADDED
 
-- Context menu
-- Settings:
-    - notifyActions
+- settings
+- new log
+- upload sse
+- upload thirdPartyFiles
+- create widgets
+- extract snippets
 
-## Fixed
 
-Error al migrar un layout
+## 4.0.1
+Fix Validacion de version
+## 4.0.2
+Fix Readme
+## 4.0.3
+Fix Readme
+## 4.0.4
+Fix Readme
+## 4.0.4
+Fix Validacion de version
+## 4.0.4
+Fix Validacion de version y migracion de layouts

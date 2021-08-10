@@ -1,196 +1,365 @@
 {
-  "name": "dcu-utils",
-  "displayName": "DCU UTILS",
-  "description": "Interfaz para subir codigo a OCC y/o migrar layouts entre ambientes",
-  "version": "3.0.0",
-  "publisher": "CrisJF",
-  "icon": "images/DCU_LOGO.png",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Cr1sJF/dcu"
-  },
-  "engines": {
-    "vscode": "^1.52.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "onStartupFinished"
-  ],
-  "main": "./extension.js",
-  "contributes": {
-    "snippets": [
-      {
-        "language": "json",
-        "path": "./snippets/snippets-json.code-snippets"
-      },
-      {
-        "language": "javascript",
-        "path": "./snippets/snippets-js.code-snippets"
-      },
-      {
-        "language": "html",
-        "path": "./snippets/snippets-html.code-snippets"
-      }
-    ],
-    "configuration": {
-      "title": "DCU",
-      "properties": {
-        "dcu.1.general.updateAllInstance": {
-          "type": "string",
-          "default": "PREGUNTAR",
-          "enum": [
-            "NUNCA",
-            "PREGUNTAR",
-            "SOLO SI ES ARCHIVO BASE"
-          ],
-          "description": "Actualizar todas las instancias del archivo a subir"
-        },
-        "dcu.1.general.ignoreCommerceVersion": {
-          "type": "boolean",
-          "default": true,
-          "description": "Cuando se migran layouts, se agregara el comando -g para ignorar las versiones de OCC"
-        },
-        "dcu.1.general.migrateConfigOnTransfer": {
-          "type": "string",
-          "default": "PREGUNTAR",
-          "enum": [
-            "PREGUNTAR",
-            "SI",
-            "NO"
-          ],
-          "description": "¿Migrar configuración de los widgets al hacer un TRANSFER?"
-        },
-        "dcu.1.general.notifyActions": {
-          "type": "string",
-          "default": "SOLO ERRORES",
-          "enum": [
-            "SI",
-            "NO",
-            "SOLO ERRORES"
-          ],
-          "description": "¿Quieres ver los mensajes de los eventos?. De todas formas, se puede ver la información en el LOG."
-        },
-        "dcu.1.general.notifyUpdates": {
-          "type": "string",
-          "default": "PREGUNTAR",
-          "enum": [
-            "PREGUNTAR",
-            "SIEMPRE",
-            "NUNCA"
-          ],
-          "description": "¿Quieres ver las novedades en cada actualización?"
-        },
-        "dcu.1.general.enableSessionFileTracking": {
-          "type": "boolean",
-          "default": true,
-          "description": "Hablitar seguimiento de archivos"
-        },
-        "dcu.2.dev.enviromentUrl": {
-          "type": "string",
-          "description": "Ingresa la URL del ambiente DEV",
-          "format": "uri"
-        },
-        "dcu.2.dev.key": {
-          "type": "string",
-          "description": "Ingresa la APP_KEY del ambiente DEV"
-        },
-        "dcu.3.test.enviromentUrl": {
-          "type": "string",
-          "description": "Ingresa la URL del ambiente TEST",
-          "format": "uri"
-        },
-        "dcu.3.test.key": {
-          "type": "string",
-          "description": "Ingresa la APP_KEY del ambiente TEST"
-        },
-        "dcu.4.stage.enviromentUrl": {
-          "type": "string",
-          "description": "Ingresa la URL del ambiente STAGE",
-          "format": "uri"
-        },
-        "dcu.4.stage.key": {
-          "type": "string",
-          "description": "Ingresa la APP_KEY del ambiente STAGE"
-        },
-        "dcu.5.prod.enviromentUrl": {
-          "type": "string",
-          "description": "Ingresa la URL del ambiente PROD",
-          "format": "uri"
-        },
-        "dcu.5.prod.key": {
-          "type": "string",
-          "description": "Ingresa la APP_KEY del ambiente PROD"
-        }
-      }
-    },
-    "commands": [
-      {
-        "command": "dcu.e",
-        "title": "Actualizar componente (dcu -e)",
-        "category": "DCU"
-      },
-      {
-        "command": "dcu.grab",
-        "title": "Descargar ambiente (dcu -g)",
-        "category": "DCU"
-      },
-      {
-        "command": "dcu.r",
-        "title": "Migrar archivo (dcu -r)",
-        "category": "DCU"
-      },
-      {
-        "command": "dcu.x",
-        "title": "Migrar componente (dcu -x)",
-        "category": "DCU"
-      }
-    ],
-    "menus": {
-      "explorer/context": [
-        {
-          "command": "dcu.grab",
-          "when": "explorerResourceIsFolder",
-          "group": " 7_modification@2"
-        },
-        {
-          "command": "dcu.e",
-          "when": "resource",
-          "group": " 7_modification@3"
-        },
-        {
-          "command": "dcu.r",
-          "when": "!explorerResourceIsFolder",
-          "group": " 7_modification@4"
-        },
-        {
-          "command": "dcu.x",
-          "when": "resource",
-          "group": " 7_modification@5"
-        }
-      ]
-    }
-  },
-  "scripts": {
-    "lint": "eslint .",
-    "pretest": "npm run lint",
-    "test": "node ./test/runTest.js"
-  },
-  "devDependencies": {
-    "@types/vscode": "^1.52.0",
-    "@types/glob": "^7.1.3",
-    "@types/mocha": "^8.0.4",
-    "@types/node": "^12.11.7",
-    "eslint": "^7.15.0",
-    "glob": "^7.1.6",
-    "mocha": "^8.1.3",
-    "typescript": "^4.1.2",
-    "vscode-test": "^1.4.1"
-  },
-  "dependencies": {
-    "@rauschma/stringio": "^1.4.0",
-    "node-cmd": "^4.0.0",
-    "node-powershell": "^4.0.0"
-  }
+	"name": "dcu-utils",
+	"displayName": "DCU UTILS",
+	"description": "Interfaz para subir codigo a OCC y/o migrar layouts entre ambientes",
+	"version": "4.0.6",
+	"publisher": "CrisJF",
+	"icon": "images/DCU_LOGO.png",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Cr1sJF/dcu"
+	},
+	"engines": {
+		"vscode": "^1.56.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"main": "./extension.js",
+	"contributes": {
+		"snippets": [
+			{
+				"language": "json",
+				"path": "./snippets/snippets-json.code-snippets"
+			},
+			{
+				"language": "javascript",
+				"path": "./snippets/snippets-js.code-snippets"
+			},
+			{
+				"language": "html",
+				"path": "./snippets/snippets-html.code-snippets"
+			}
+		],
+		"configuration": {
+			"title": "DCU",
+			"properties": {
+				"dcu.1.general.notifyActions": {
+					"type": "string",
+					"default": "SOLO ERRORES",
+					"enum": [
+						"SI",
+						"NO",
+						"SOLO ERRORES"
+					],
+					"description": "¿Quieres ver los mensajes de los eventos?. De todas formas, se puede ver la información en el LOG."
+				},
+				"dcu.1.general.notifyUpdates": {
+					"type": "string",
+					"default": "PREGUNTAR",
+					"enum": [
+						"PREGUNTAR",
+						"SI",
+						"NO"
+					],
+					"description": "¿Quieres ver las novedades en cada actualización?"
+				},
+				"dcu.1.general.enableSessionFileTracking": {
+					"type": "boolean",
+					"default": true,
+					"description": "Hablitar seguimiento de archivos"
+				},
+
+				"dcu.1.dcu.updateAllInstances": {
+					"type": "string",
+					"default": "PREGUNTAR",
+					"enum": [
+						"PREGUNTAR",
+						"SI",
+						"NO"
+					],
+					"description": "Al subir un archivo base, actualiza todas las instancias"
+				},
+				"dcu.1.dcu.migrateConfigOnTransfer": {
+					"type": "string",
+					"default": "PREGUNTAR",
+					"enum": [
+						"PREGUNTAR",
+						"SI",
+						"NO"
+					],
+					"description": "¿Migrar configuración de los widgets al hacer un TRANSFER (dcu -x)?"
+				},
+				"dcu.1.updateAllInstance": {
+					"type": "string",
+					"default": "PREGUNTAR",
+					"enum": [
+						"PREGUNTAR",
+						"SI",
+						"SOLO SI ES ARCHIVO BASE"
+					],
+					"description": "Actualizar todas las instancias del archivo a subir",
+					"markdownDeprecationMessage": "**Deprecado**: Utilice `#dcu.1.general.dcu.updateAllInstances#`",
+					"deprecationMessage": "Deprecado: Utilice `#dcu.1.general.dcu.updateAllInstances#`"
+				},
+				"dcu.1.migrateConfigOnTransfer": {
+					"type": "string",
+					"default": "PREGUNTAR",
+					"enum": [
+						"PREGUNTAR",
+						"SI",
+						"NO"
+					],
+					"description": "¿Migrar configuración de los widgets al hacer un TRANSFER?",
+					"markdownDeprecationMessage": "**Deprecado**: Utilice `#dcu.1.general.dcu.migrateConfigOnTransfer#`",
+					"deprecationMessage": "Deprecado: Utilice `#dcu.1.general.dcu.migrateConfigOnTransfer#`"
+				},
+				"dcu.1.dcu.copyCommand": {
+					"type": "boolean",
+					"default": true,					
+					"description": "Si se produce un error, muestra un mensaje para copiar el comando ejecutado al portapapeles"
+				},
+
+				"dcu.1.general.fetchLayouts": {
+					"type": "boolean",
+					"default": true,
+					"description": "Cuando se migran layouts, se listarán los disponibles dado el ambiente origen",
+					"markdownDeprecationMessage": "**Deprecado**: Utilice `#dcu.1.general.plsu.fetchLayouts#`",
+					"deprecationMessage": "Deprecado: Utilice `#dcu.1.general.plsu.fetchLayouts#`"
+				},
+				"dcu.1.general.ignoreCommerceVersion": {
+					"type": "boolean",
+					"default": true,
+					"description": "Cuando se migran layouts, se agregara el comando -g para ignorar las versiones de OCC",
+					"markdownDeprecationMessage": "**Deprecado**: Utilice `#dcu.1.general.plsu.ignoreCommerceVersion#`",
+					"deprecationMessage": "Deprecado: Utilice `#dcu.1.general.plsu.ignoreCommerceVersion#`"
+				},
+				"dcu.1.plsu.fetchLayouts": {
+					"type": "boolean",
+					"default": true,
+					"description": "Cuando se migran layouts, se listarán los disponibles dado el ambiente origen"					
+				},
+				"dcu.1.plsu.ignoreCommerceVersion": {
+					"type": "boolean",
+					"default": true,
+					"description": "Cuando se migran layouts, se agregara el comando -g para ignorar las versiones de OCC"
+				},
+				
+				"dcu.1.ccw.widgetLanguages": {
+					"type": "string",
+					"default": "BÁSICOS",
+					"enum": [
+						"PREGUNTAR",
+						"BÁSICOS",
+						"TODOS"
+					],
+					"enumDescriptions": [
+						"PREGUNTAR: Se listarán los locales para selecciónar cuales mantener",
+						"BÁSICOS: Se mantendran los locales de inglés y español unicamente",
+						"TODOS: Se mantendran todos los locales"
+					],
+					"description": "¿En que idiomas debe crearse un Widget?"
+				},
+
+				"dcu.1.sse.useZipName": {
+					"type": "boolean",
+					"default": false,
+					"description": "Al subir una SSE, utilizar el nombre del archivo .zip como nombre de la SSE"
+				},
+				"dcu.1.thirdParty.useFileName": {
+					"type": "boolean",
+					"default": false,
+					"description": "Al subir una ThirdPartyFile, utilizar el nombre del archivo como nombre de la ThirdPartyFile"
+				},
+
+				"dcu.2.dev.enviromentUrl": {
+					"type": "string",
+					"description": "Ingresa la URL del ambiente DEV",
+					"format": "uri"
+				},
+				"dcu.2.dev.key": {
+					"type": "string",
+					"description": "Ingresa la APP_KEY del ambiente DEV"
+				},
+				"dcu.3.test.enviromentUrl": {
+					"type": "string",
+					"description": "Ingresa la URL del ambiente TEST",
+					"format": "uri"
+				},
+				"dcu.3.test.key": {
+					"type": "string",
+					"description": "Ingresa la APP_KEY del ambiente TEST"
+				},
+				"dcu.4.stage.enviromentUrl": {
+					"type": "string",
+					"description": "Ingresa la URL del ambiente STAGE",
+					"format": "uri"
+				},
+				"dcu.4.stage.key": {
+					"type": "string",
+					"description": "Ingresa la APP_KEY del ambiente STAGE"
+				},
+				"dcu.5.prod.enviromentUrl": {
+					"type": "string",
+					"description": "Ingresa la URL del ambiente PROD",
+					"format": "uri"
+				},
+				"dcu.5.prod.key": {
+					"type": "string",
+					"description": "Ingresa la APP_KEY del ambiente PROD"
+				}
+			}
+		},
+		"commands": [
+			{
+				"command": "dcu.e",
+				"title": "Actualizar componente (dcu -e)",
+				"category": "DCU"
+			},
+			{
+				"command": "dcu.m",
+				"title": "Subir componente (dcu -m)",
+				"category": "DCU"
+			},
+			{
+				"command": "dcu.t",
+				"title": "Subir archivo (dcu -t)",
+				"category": "DCU"
+			},
+			{
+				"command": "dcu.grab",
+				"title": "Descargar ambiente (dcu -g)",
+				"category": "DCU"
+			},
+			{
+				"command": "dcu.r",
+				"title": "Migrar archivo (dcu -r)",
+				"category": "DCU"
+			},
+			{
+				"command": "dcu.x",
+				"title": "Migrar componente (dcu -x)",
+				"category": "DCU"
+			},
+			{
+				"command": "ccw.w",
+				"title": "Crear widget (ccw -w)",
+				"category": "DCU"
+			},
+			{
+				"command": "occ.l",
+				"title": "Extraer locales",
+				"category": "DCU"
+			},
+			{
+				"command": "occ.s",
+				"title": "Subir SSE",
+				"category": "DCU"
+			}
+		],
+		"menus": {
+			"explorer/context": [
+				{
+					"command": "dcu.grab",
+					"when": "explorerResourceIsFolder",
+					"group": " 7_modification@2"
+				},
+				{
+					"command": "dcu.e",
+					"when": "resource",
+					"group": " 7_modification@3"
+				},
+				{
+					"command": "dcu.t",
+					"when": "!explorerResourceIsFolder",
+					"group": " 7_modification@4"
+				},
+				{
+					"command": "dcu.m",
+					"when": "explorerResourceIsFolder",
+					"group": " 7_modification@5"
+				},
+				{
+					"command": "dcu.r",
+					"when": "!explorerResourceIsFolder",
+					"group": " 7_modification@6"
+				},
+				{
+					"command": "dcu.x",
+					"when": "resource",
+					"group": " 7_modification@7"
+				},
+				{
+					"command": "ccw.w",
+					"when": "resource",
+					"group": " 7_modification@8"
+				},
+				{
+					"command": "occ.l",
+					"when": "resourceFilename == configMetadata.json",
+					"group": " 7_modification@1"
+				},
+				{
+					"command": "occ.s",
+					"when": "resourceExtname == .zip",
+					"group": " 7_modification@1"
+				}
+			]
+		},
+		"keybindings": [
+			{
+				"command": "dcu.e",
+				"key": "ctrl+alt+e"
+			},
+			{
+				"command": "dcu.t",
+				"key": "ctrl+alt+t"
+			},
+			{
+				"command": "dcu.m",
+				"key": "ctrl+alt+m"
+			},
+			{
+				"command": "dcu.r",
+				"key": "ctrl+alt+r"
+			},
+			{
+				"command": "dcu.x",
+				"key": "ctrl+alt+x"
+			},
+			{
+				"command": "dcu.grab",
+				"key": "ctrl+alt+g"
+			},
+			{
+				"command": "occ.more",
+				"key": "ctrl+alt+space"
+			},
+			{
+				"command": "ccw.w",
+				"key": "ctrl+alt+w"
+			}
+		]
+	},
+	"scripts": {
+		"lint": "eslint .",
+		"pretest": "npm run lint",
+		"test": "node ./test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.3",
+		"@types/mocha": "^8.2.2",
+		"@types/node": "^15.3.1",
+		"@types/vscode": "^1.56.0",
+		"eslint": "^7.26.0",
+		"glob": "^7.1.7",
+		"mocha": "^8.4.0",
+		"typescript": "^4.2.4",
+		"vscode-test": "^1.5.2"
+	},
+	"dependencies": {
+		"@rauschma/stringio": "^1.4.0",
+		"audio-play": "^2.3.1",
+		"axios": "^0.21.1",
+		"boxen": "^5.0.1",
+		"copy-paste": "^1.3.0",
+		"directory-tree": "^2.2.9",
+		"form-data": "^4.0.0",
+		"node-cmd": "^4.0.0",
+		"node-powershell": "^4.0.0",
+		"vscode-nls": "^5.0.0"
+	}
 }

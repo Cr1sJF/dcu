@@ -1,82 +1,297 @@
 # DCU UTILS
-Bienvenido a la extension que solo un selecto grupo (porque somos pocos los que trabajamos en OCC) va a utilizar.
-El propósito de esta extensión es facilitar el desarrollo y migración en OCC, facilitando la ejecución de comandos.
+DCU Utils es una extensión que permite facilitar la subida y migración de código y archivos a OCC.
+Esta versión 4.0.0 representa una reinviención en su gran mayoria (No solo a nivel código, sino también a las funcionalidades presentadas). Por tal motivo, la documentación se presentará como si fuera la primera vez que se publica la extensión.
 
-## Features
-Estas son todas las acciones que pueden ejecutarse desde la botonera:
-
-
-#### NOTA:
+## NOTA:
 Siempre que se haga referencia a un **WIDGET**, lo mismo aplica para *ELEMENTOS*, *SNIPPETS*, etc (A menos que se especifique lo contrario).
 
-- Descargar el código de un ambiente de OCC
-- Actualizar un Widget
-- Subir un archivo
-- Subir un widget entero
-- Mirar un archivo de un ambiente a otro
-- Migrar un widget completo de un ambiente a otro
-- Migrar un Layout
-- Migrar todos los Layouts
-## Requirements
+## FEATURES:
+Esta extensión permite:
+ - Descargar código de un ambiente de OCC
+ - Actualizar código de widgets
+ - Subir archivos
+ - Subir componentes
+ - Migrar archivos
+ - Migrar componentes
+ - Migrar Layouts
+ - Crear Widgets
+ - Extraer locales de los archivos de configuracion
+ - Subir/Eliminar Third Party Files
+ - Subir/Eliminar/Descargar SSEs
+
+## Requisitos
 
 - Node
-- Design Code Utility > 1.13
+- Design Code Utility >= 1.13.3
 
 
-## Known Issues
+## Issues conocidos
 
-Ninguno, si codeo re piola
+Ninguno
 
-**NOTA:** Si encuentran alguno, no lo hagan público, me avisan por privado XP
+## 4.0.0
 
-## 1.0.0
 
-1. En primer lugar, debemos configurar la extensión. Para ello nos dirigimos a su apartado dentro de las configuraciones de Visual Studio Code
-![1 - Config](https://i.imgur.com/AXV9ANi.gif)
+### Configuraciones de la Extensión
 
-2. Todas las acciones poseen 3 estados **INICIADO**, **EXITOSO**, **FALLIDO**. Estos estados son reflejados y notificado mediante notificaciones:
-    - Inicio de acción
-    - Acción finalizada correctamente
-    - Acción finalizada con error
+#### NOTA:
+Las configuraciones de la extensión pueden abarcar dos niveles:
+ - User Settings: Configuraciónes que aplican de manera global a VSCode
+ - Workspace Settings: Configuraciones que solo aplican al workspace donde se esta trabajando.
 
-![2.1 - Exito](https://i.imgur.com/199JvY8.gif)
-![2.1 - Error](https://i.imgur.com/1igwRtP.gif)
+La recomendación que ofrecemos, es que las configuraciones generales, si aplica, se realicen a nivel de **User**. Por otro lado, las configuraciones de ambiente, deberían realizarse a nivel de **Workspace**.
 
-3. Además, al ejecutar una acción, el icono de la misma pasa por los 3 estados previamente mencionados
-    - Inicio
+Para configurar la extensión, nos dirigimos a su apartado dentro de las configuraciones de Visual Studio Code
 
-    ![3.1 - Inicio](https://i.imgur.com/eYD45rP.png)
+![1 - Config](https://imgur.com/42xfXdh.gif)
 
-    - Éxito
+### Lista de configuraciones
 
-    ![3.2 - Éxito](https://i.imgur.com/BgzrILX.png)
+#### Configuraciones generales
 
-    - Error
-    
-    ![3.3 - Error](https://i.imgur.com/jZyeIFX.png)
-    
+| Configuración | Descripción         |Valor por defecto   |
+| ------------- |:-------------:| :--------:|
+| notifyActions        | Al ejecutar una acción, mostrará un mensaje informando el status de la misma.          |SOLO ERRORES        |
+| notifyUpdates         | Informa al usuario las novedades de cada version         | PREGUNTAR         |
+| enableSessionFileTracking|Habilita un nuevo log donde se registra la actividad del usuario | SI|
 
-4. Como última fuente de información, todas las acciones quedan registradas en una consola donde puede verse la información, advertencias y errores que hayan ocurrido.
+
+#### Configuraciones de DCU
+
+|Configuración  |Descripción  |Valor por defecto  |
+|---------|---------|---------|
+|copyCommand     | Permite copiar el comando ejectuado, si el mismo da error        | SI        |
+|updateAllInstances     | Al subir un archivo base, actualiza todas las instancias del mismo        | PREGUNTAR        |
+|migrateConfigOnTransfer     | Al migrar un componente, también migrará las configuraciones del mismo        |PREGUNTAR         |
+
+#### Configuraciones de PLSU
+
+|Configuración  |Descripción  |Valor por defecto  |
+|---------|---------|---------|
+|fetchLayouts     | Listará los layouts disponibles en el ambiente de origen        |   SI      |
+|ignoreCommerceVersion     |  Se ignora la version de OCC al migrar Layouts       |    SI     |
+
+#### Configuraciones de CCW
+
+
+|Configuración  |Descripción  |Valor por defecto  |
+|---------|---------|---------|
+|widgetLanguages     | Selecciona los idiomas que se utilizan al crear un widget        |  BÁSICOS       |
+
+#### Configuraciones de SSE
+
+|Configuración  |Descripción  |Valor por defecto  |
+|---------|---------|---------|
+|useZipName     |    Al subir una SSE, utilizar el nombre del archivo .zip como nombre de la SSE     | NO        |
+
+#### Configuraciones de ThirdPartyFiles
+
+|Configuración  |Descripción  |Valor por defecto  |
+|---------|---------|---------|
+|useFileName     |    Al subir una SSE, utilizar el nombre del archivo .zip como nombre de la SSE     | NO        |
+
+#### Configuraciones de Ambientes
+
+Todos los ambientes (DEV, TEST, STAGE, PROD) disponen de la siguiente configuración:
+
+|Configuración  |Descripción  |
+|---------|---------|
+|enviromentUrl     | URL del ambiente        |
+|key     |  APP_KEY del ambiente       |
+
+### Caracteristicas
+
+Las capacidades de esta extensión permiten desde subir un componente a OCC, hasta crear thirdPartyFiles o subir SSEs.
+La gran mayoria de estos comando disponen de un acceso en la **botonera**, no obastente, tambien se disponibiliza un **menú contextual** para acceder a ellas desde el árbol de archivos. Por último, se agregaron *shortcuts* para ejecutar tareas con una determinada **combinación de teclas**. A continuación, se listan los comandos y la disponibilización de los mismos
+
+- **UPDATE** (dcu -e)
+
+|Botonera 						           |Atajo        |Menú contextual|
+|------------------------------------------|-------------|---------------|
+| ![dcu -e](https://imgur.com/uoTRJHE.png) | ctrl+alt+e  | SI            |
+
+**Condición para ver el menú contextual:** Se debe hacer click derecho sobre una carpeta o archivo
+
+**ACCIÓN:** Actualiza el codigo de un componente. En caso de ejecutarse desde la botonera o el atajo, sin que haya un archivo abierto, se solicitará el nombre del componente a actualizar. Esto **NO** es case-sensitive y solo requiere el nombre del componente (Ya sea widget, elemento, theme, etc)
+
+- **PUT FILE** (dcu -t)
+
+
+|Botonera 						           |Atajo        |Menú contextual|
+|------------------------------------------|-------------|---------------|
+| ![dcu -t](https://imgur.com/UDPaRik.png) |ctrl+alt+t   |  SI           |
+
+**Condición para ver el menú contextual:** Se debe hacer click derecho sobre un archivo
+
+**ACCIÓN:** Sube un archivo a OCC
+
+- **PUT FOLDER** (dcu -m)
+
+|Botonera 						           |Atajo        |Menú contextual|
+|------------------------------------------|-------------|---------------|
+| ![dcu -m](https://imgur.com/qPwQI8f.png) | ctrl+alt+m  |  SI           |
+
+**Condición para ver el menú contextual:** Se debe hacer click derecho sobre una carpeta
+
+**ACCIÓN:** Sube un componente entero a OCC
+
+- **TRANSFER FILE** (dcu -r)
+
+|Botonera 						           |Atajo        |Menú contextual|
+|------------------------------------------|-------------|---------------|
+| ![dcu -r](https://imgur.com/9RglphG.png) | ctrl+alt+r  |  SI           |
+
+**ACCIÓN:** Migra un archivo a otros ambientes configurados de OCC
+
+- **TRANSFER COMPONENT** (dcu -x)
+
+|Botonera 						           |Atajo        |Menú contextual|
+|------------------------------------------|-------------|---------------|
+| ![dcu -x](https://imgur.com/IegRIjC.png) | ctrl+alt+x  |  SI           |
+
+**Condición para ver el menú contextual:** Se debe hacer click derecho sobre una carpeta
+
+**ACCIÓN:** Migra un componente a otros ambientes configurados de OCC. Si no existe, lo creará
+
+---
+
+**OTRAS UTILIDADES**
+Las otras utilidades que ofrece la extensión se encuentran bajo el boton ***Más acciones*** (![more](https://imgur.com/RGQSrrR.png)).
+Al clickear este boton, se listaran las tareas adicionales que se pueden ejecutar. Estas son:
+
+- **GRAB** (dcu -g)
+
+|Icono   						           |Atajo        |Menú contextual|
+|------------------------------------------|-------------|---------------|
+| ![dcu -g](https://imgur.com/K5fH2OS.png) | ctrl+alt+g  |  SI           |
+
+**Condición para ver el menú contextual:** Se debe hacer click derecho sobre una carpeta
+
+**ACCIÓN:** Descarga el código de OCC.
+Al ejecutar la tarea desde el atajo o la botonera, se solicitará la carpeta donde descargar el código.
+Si, por otro lado, se ejecuta desde el menú contextual, se utilizará la carpeta seleccionada como ruta para descargar el código.
+
+- **MIGRAR LAYOUTS** (plsu)
+
+|Icono   						           |Atajo        |Menú contextual|
+|------------------------------------------|-------------|---------------|
+| ![PLSU](https://imgur.com/WmfTIXD.png    |-            |  -            |
+
+
+**ACCIÓN:** Permite migrar layouts entre ambientes. El único pre-requisito es que los widgets que los conforman hayan sido migrados previamente
+
+- **CREAR WIDGET** (ccw)
+
+|Icono   						           			|Atajo        |Menú contextual|
+|---------------------------------------------------|-------------|---------------|
+| ![Crear widget](https://imgur.com/sMD6GyG.png)    |ctrl+alt+w   |  SI           |
+
+**Condición para ver el menú contextual:** Se debe hacer click derecho sobre una carpeta
+
+**ACCIÓN:** Permite crear un widget (con o sin elementos). Esta opcion crea el widget, limpia los locales, renombra y ajusta los archivos necesarios. Finalmente lo sube a OCC para que el mismo quede disponible
+
+
+- **CREAR SNIPPETS**
+
+|Icono   						           			|Atajo        |Menú contextual|
+|---------------------------------------------------|-------------|---------------|
+| ![Crear Snippets](https://imgur.com/r0bnTHz.png)  |-            |  SI           |
+
+**Condición para ver el menú contextual:** Se debe hacer click derecho sobre un archivo *"configMetadata.json"*
+
+**ACCIÓN:** Dado un archivo de configuraciones, busca y extrae los locales definidos y los agrega a los archivos de *locales* disponibles
+
+- **CREAR THIRD PARTY FILE**
+
+|Icono   						           			  |Atajo        |Menú contextual|
+|-----------------------------------------------------|-------------|---------------|
+| ![Upload ThirdParty](https://imgur.com/v9dI6x2.png) |-            |  -            |
+
+**ACCIÓN:** Permite subir thirPartyFiles a OCC. Asimismo, permite configurar en que carpeta se guarda el archivo y, si se quiere, para que sitios diponibilizarlo
+
+- **ELIMINAR THIRD PARTY FILE**
+
+|Icono   						           			  |Atajo        |Menú contextual|
+|-----------------------------------------------------|-------------|---------------|
+| ![Delete ThirdParty](https://imgur.com/5uyhNOr.png) |-            |  -            |
+
+
+**ACCIÓN:** Permite eliminar thirdPartyFiles de OCC
+
+- **DESCARGAR SSE**
+
+|Icono   						           			  						   |Atajo        |Menú contextual|
+|------------------------------------------------------------------------------|-------------|---------------|
+| ![SSE](https://imgur.com/vD6d2h9) ![Download](https://imgur.com/K5fH2OS.png) |-            |  -            |
+
+**ACCIÓN:** Permite descargar una SSE de un ambiente dado
+
+- **SUBIR SSE**
+
+|Icono   						           			  						  	 |Atajo        |Menú contextual|
+|--------------------------------------------------------------------------------|-------------|---------------|
+| ![SSE](https://imgur.com/vD6d2h9.png) ![Upload](https://imgur.com/4N7PNWP.png) |-            |  SI           |
+
+**Condición para ver el menú contextual:** Se debe hacer click derecho sobre un archivo .zip
+
+**ACCIÓN:** Permite subir una SSE de un ambiente dado
+
+- **ELIMINAR SSE**
+
+|Icono   						           			  						  	 |Atajo        |Menú contextual|
+|--------------------------------------------------------------------------------|-------------|---------------|
+| ![SSE](https://imgur.com/vD6d2h9.png) ![Delete](https://imgur.com/sANpxpx.png) |-            |  -            |
+
+**ACCIÓN:** Permite eliminar una SSE de un ambiente dado
+
+
+- **COPIAR KEY**
+
+|Icono   						      		|Atajo        |Menú contextual|
+|-------------------------------------------|-------------|---------------|
+| ![CopyKey](https://imgur.com/rs9Xfhb.png) |-            |  -            |
+
+**ACCIÓN:** Permite copiar al portapapeles la APP_KEY de un ambiente seleccionado
+
+- **COPIAR URL**
+
+|Icono   						      		 |Atajo        |Menú contextual|
+|--------------------------------------------|-------------|---------------|
+| ![CopyNode](https://imgur.com/bQy9oRd.png) |-            |  -            |
+
+**ACCIÓN:** Permite copiar al portapapeles la URL de un ambiente seleccionado
+
+
+---
+
+## LISTADO DE ATAJOS
+
+
+|COMANDO  |ATAJO  |
+|---------|---------|
+|occ.more | ctrl+alt+space|
+|dcu.e | ctrl+alt+e|
+|dcu.t | ctrl+alt+t|
+|dcu.m | ctrl+alt+m|
+|dcu.r | ctrl+alt+r|
+|dcu.x | ctrl+alt+x|
+|dcu.grab | ctrl+alt+g|
+|ccw.w | ctrl+alt+w|
+
+---
+
+## LOG
+
+Todas las acciones quedan registradas en una consola donde puede verse la información, advertencias y errores que hayan ocurrido.
 Podemos encontrar el LOG en la sección **OUTPUT**, y luego buscamos *DCU INFO*
-![4 - Output](https://i.imgur.com/XJHSIac.gif)
+![4 - Output](https://imgur.com/27JaOMI.png)
 
-5. Una vez configurado, podremos dar uso a la botonera de OCC, ubicada en la parte inferior derecha de VS Code
-    **NOTA:** Muchas acciones tienen un comportamiento distinto si se tiene o no abierto un archivo de un Widget. Por ejemplo:
-    - Si se quiere actualizar un widget con un archivo abierto, la extensión actualizará el widget abierto.
-    ![5 - Con editor](https://i.imgur.com/zsAXpHW.gif)
 
-    - Si no se abrió un editor, la extensión solicitará el nombre del componente que se quiere actualizar
-    ![5 - Sin editor](https://i.imgur.com/Xcff9Pd.gif)
+Entre las mejoras al momento de generar el log, se incorporó una cabezera destacando la tarea ejecutada, una sección donde se visualiza el comando ejecutado y/o la configuración definida. Luego llega el respuesta de la tarea ejecutada. A diferencia de versiones previas, esta consola loggea en tiempo real la respuesta del servidor (Antes aparecia el log una vez finaliada la tarea).
 
-6. Para algunas acciones especiales, como la migración de Widgets, la extensión solicitará que se seleccione el ambiente de destino
+---
 
-![6 - Selector](https://i.imgur.com/NoXyjvh.gif)
-
-## V1.0.1
-Correccion sistema de notificiaciones
-
-## 1.1.0
-## Llegaron los Snippets!
+## SNIPPETS
 
 Ahora, ademas de las funcionalidades ya existentes, se agregaron algunos atajos de teclado que van a facilitar el completado de algunos archivos de configuración
 
@@ -123,114 +338,11 @@ Actualmente, disponemos de atajos para 3 extensiones de archivos:
 4. Estructura del archivo ext.json (Cuando se crea un widget)
 ![4 - ext.json](https://i.imgur.com/wmDb4nv.gif)
 
-## 2.0.0
-## Full renovación
-Tal vez sea un poco brusco dar un salto tan grande de version al ver lo que incluye esta actualizacion, PERO por debajo se hizo una profunda reestructuracion del código. Sin embargo, ahi van las cosillas nuevas:
+---
 
-### Nuevo log
-Implementamos una nueva estructura de log, con información mas clara y detallada respecto a su version previa:
+## CREACIÓN DE WORKSPACE
 
-![Log](https://imgur.com/vFMsVci.png)
-
-1. Inicio bloque de Log
-2. Inicia ejecución de tarea
-3. Comando que se ejecuta
-4. Información del status de la tarea
-5. Respuesta de la tarea
-6. Advertencias que arrojo la tarea
-7. Si se produce un error, en vez de INFO y WARN se visualizará una seccion ERROR
-8. Fin del bloque de Log
-
-### Fusión de "Migrar layout" y "Migrar todos los layouts"
-Ambas funcionalidades coexisten en un solo botón. Al momento de seleccionar el layout a migrar, puede ingresarse un * para migrarlos todos
-
-![Migrar](https://imgur.com/vtVs4Zx.png)
-
-### Actualización de SETTINGS
-Se removieron los checks para activar o desactivar funcionalidades
-
-### Nuevos iconos
-Otra chucheria, cambie los iconos de "Migrar Layout" y "Actualizar Widget"
-
-
-### 2.0.1
-
-HotFix
-
-### 2.0.2
-
-HotFix (sorry)
-
-### 2.0.3
-Ups! Mala mia. No va a volver a pasar... esta semana...
-
-## 2.1.0
-### Tracking de archivos
-
-Agregamos una nueva setting *"Hablitar seguimiento de archivos"*.
-Al estar encendido este check, la extensión mantendra un tracking de los archivos con los que hayas interactuado desde que abris VS Code, hasta que lo cierres (o limpies la consola).
-
-Dentro de la pestaña *OUTPUT* vas a encontrar una nueva consola, **DCU FILE TRACKING**, ahi verás reflejados los cambios que hagas
-
-
-![FileTracking](https://imgur.com/OrWyUIR.png)
-
-### Bugfix
-Habia un error al intentar hacer GRAB de un ambiente, pero ya fue solucionado
-
-## 2.1.1
-Hot fix -_-
-
-
-## 3.0.0
-
-### Administracion de notificaciones
-Puede ser medio cargoso el popup del VS Code, asi que ahora se puede configurar la frecuencia de los popups.
-
-Ahora se disponibilizó una nueva configuración para ello.
-
-![NotifSetting](https://imgur.com/PhhdAzr.png)
-
-Si la configuración se setea en "SI", el comportamiento será igual al de siempre.
-Si se setea en "NO", dejarán de mostrarse mensajes emergentes. De todos modos, persiste el log, el spinner sobre la acción y el resultado de la misma.
-
-Si se setea en "SOLO ERRORES", solo se mostrarán notificaciónes cuando se produzca un error al ejectuar el comando.
-
-**NOTA:** Esta configuración solo impacta en los mensajes al momento de ejecutar un comando, cualquier error previo (falta de configuracion, no hay archivos abiertos, etc.) se notificaran de todas formas.
-
-### Menu contextual:
-La actualización que da pie a la nueva versión de la extensión corresponde a un menú contextual (click derecho) sobre determinadas carpetas del código.
-
-Las acciones que pueden ejecutarse desde este menú (Al hacer click derecho) son:
-
-- GRAB          (dcu -g): Si se hace sobre una carpeta
-- UPDATE        (dcu -e): Si se hace sobre una carpeta o archivo
-- TRANSFER ALL  (dcu -x): Si se hace sobre una carpeta o archivo
-- TRANSFER FILE (dcu -r): Si se hace sobre un archivo
-
-![ContextFile](https://imgur.com/chpCgiG.png)
-![ContextFolder](https://imgur.com/jZVp8T0.png)
-
-Una vez seleccionada una acción, el procedimiento es exactamente igual que antes. La acción seleccionada comenzará a ejecutarse (spinner en la parte inferior derecha) y al finalizar indicara con un icono (y notificación) el estado de la misma.
-Claro está que la acción persiste en el LOG.
-
-
-### PUT de instancias mejorado
-Se modificó la configuración sobre "Actualizar todas las instancias". Previamente era solo un check, es un selector.
-Esto permite tener control sobre lo que sucede al subir un archivo.
-
-![PutInstances](https://imgur.com/78SJ70b.png)
-
-Opciones:
-
-- NUNCA:                    Jamas se agrega el la opcion -i al subir un archivo a OCC
-- PREGUNTAR:                El sistema determina si se modificó un archivo base y consultará si quieren actualizarse todas las intancias
-- SOLO SI ES ARCHIVO BASE:  Cada vez que se suba un archivo base "instanciable" (template, less o locale) se agregará la opcion -i.
-
-
-# IMPORTANTE
-
-Mucha gente me pregunta (Mucha gente = Luis) ***"Que pasa si estoy trabajando en dos proyectos? Como configuro urls y keys para cada uno??***
+Mucha gente me pregunta ***"Que pasa si estoy trabajando en dos proyectos? Como configuro urls y keys para cada uno??***
 
 Bueno, para ello, VS Code nos disponibiliza settings por **WORKSPACE**, por lo que es recomendable que, si eventualmente, se trabaja en dos proyectos, crear un workspace para cada uno
 
@@ -258,20 +370,3 @@ Al abrir un workspace, VS Code lo resaltará en las carpetas abiertas.
 ![WorkspaceSettings](https://imgur.com/2wz6Vap.png)
 
 **NOTA:** Si no se configuran settings por workspace (O si no se utiliza un workspace),la extensión tomará las settings a nivel User
-
-
-
-## Extension Settings
-
-Si bien esta extensión posee muchas configuraciónes, no requiere mucho tiempo setear lo mínimo indispensable para su correcto funcionamiento
-
-* `dcu.general`                                 : Aca se encuentran las configuraciones generales de la extension
-    * `dcu.general.enableSessionFileTracking`   : Activa el log de archivos modificados
-    * `dcu.general.ignoreCommerceVersion`       : Cuando esta opción este checkeada, se ignora la versión de OCC al momento de migrar layouts
-    * `dcu.general.migrateConfigOnTransfer`     : Selecciona el comportamiento de las configuraciones del widget al migrar un widget entre ambientes.
-    * `dcu.general.notifyActions`               : Configura las notificaciones cuando se ejecutan comandos
-    * `dcu.general.notifyUpdates`               : Configura las notificaciones cuando la extension se actualice
-
-* `dcu.[ENV]`                               : La extensión posee cuatro sub-secciones para configurar las credenciales de los ambientes (DEV, TEST, STAGE, PROD)
-    * `enviromentUrl`                       : URL del ambiente asociado a la sección. **IMPORTANTE:** La url debe ser exactamente igual al formato https://XXXXXXXXENV-admin.occa.ocs.oraclecloud.com o https://ccadmin-ENV-XXXX.oracleoutsourcing.com (Finalizando en .com y no .com/)
-    * `key`                                 : APP_KEY del ambiente asociado a esta sección

@@ -1,0 +1,19 @@
+{
+	"LOGIN": "/ccadmin/v1/login",
+	"SITES": "/ccadmin/v1/sites",
+	"VERIFY": "/ccadmin/v1/verify",
+	"LAYOUTS":"/ccadmin/v1/layouts",
+	"THIRDPARTY":{
+		"FOLDERS":"/ccadmin/v1/files?folder=/thirdparty&assetType=folder",
+		"FILES":"/ccadmin/v1/files",
+		"CREATE_FOLDER":"/ccadmin/v1/files/createFolder",
+		"DELETE_FILES":"/ccadmin/v1/files/deleteFiles"
+	},
+	"SSE":{
+		"GET_SSE":"/ccadmin/v1/serverExtensions",
+		"DOWNLOAD_SSE":"/ccadmin/v1/serverExtensions/:SSE_ID",
+		"POST_SSE":"/ccadmin/v1/serverExtensions/",
+		"DELETE_SSE":"/ccadmin/v1/serverExtensions/:SSE_ID"
+
+	}
+}

@@ -1,182 +1,288 @@
 {
-    "HOT_FIX": "HF",
-    "RELEASE": "R",
-    "SI": "SI",
-    "NO": "NO",
-    "NUNCA": "NUNCA",
-    "PREGUNTAR": "PREGUNTAR",
-    "SIEMPRE": "SIEMPRE",
-    "SOLO_ERRORES": "SOLO ERRORES",
-    "SOLO_SI_BASE":"SOLO SI ES ARCHIVO BASE",
-    "VALID_PATHS": ["element", "global", "snippets", "theme", "widget","siteSettings"],
-    "INSTANCABLES_FILES":[".template", ".less", "ns."],
-    "UNNESTEABLE_COMPONENTS":["global", "snippets"],
-    "STATUS":{
-        "SUCCESS":"SUCCESS",
-        "FAIL":"FAIL"
-    },
-    "COMPONENTS": {
-        "WIDGET": "widget",
-        "GLOBAL": "global",
-        "THEME": "theme",
-        "ELEM": "element",
-        "SNIPPET": "snippets",
-        "SITE_SETTINGS": "siteSettings"
-    },
-    "MSGS": {
-        "GRAB_START": "Iniciando grab de @@envName@@...",
-        "GRAB_OK": "Código descargado correctamente",
-        "GRAB_ERROR": "Error descargando código de @@envName@@",
-        "PUT_START": "Subiendo @@componentName@@...",
-        "PUT_OK": "@@componentName@@ subido correctamente",
-        "PUT_ERROR": "Error subiendo @@componentName@@",
-        "PUT_ALL_START": "Subiendo @@componentName@@...",
-        "PUT_ALL_OK": "@@componentName@@ subido correctamente",
-        "PUT_ALL_ERROR": "Error subiendo los archivos de @@componentName@@",
-        "REFRESH_STRAT": "Actualizando @@componentName@@...",
-        "REFRESH_OK": "@@componentName@@ actualizado correctamente",
-        "REFRESH_ERROR": "Error actualizando @@componentName@@",
-        "TRANSFER_START": "Enviando @@componentName@@ a @@destEnv@@...",
-        "TRANSFER_OK": "@@componentName@@ enviado a @@destEnv@@ correctamente",
-        "TRANSFER_ERROR": "Error enviando @@componentName@@ a @@destEnv@@",
-        "PLSU_START": "Clonando @@layoutName@@ en @@destEnv@@...",
-        "PLSU_OK": "@@layoutName@@ actualizado correctamente en @@destEnv@@",
-        "PLSU_ERROR": "Error actualizando @@layoutName@@ en @@destEnv@@"
-    },
-    "MGS_TYPES": {
-        "INFO": "INFO",
-        "SUCCESS": "INFO",
-        "WARN": "WARN",
-        "ERROR": "ERROR"
-    },
-    "ENV": {
-        "DEV": "DEV",
-        "TEST": "TEST",
-        "STAGE": "STAGE",
-        "PROD": "PROD",
-        "ALL": ["DEV", "TEST", "STAGE", "PROD"]
-    },
-    "CONFIG": {
-        "GENERAL": "dcu.1.general",
-        "DEV": "dcu.2.dev",
-        "TEST": "dcu.3.test",
-        "STAGE": "dcu.4.stage",
-        "PROD": "dcu.5.prod",
-        "PROPS": {
-            "UPDATE_ALL_INSTANCES": "updateAllInstance",
-            "IGNORE_COMMERCE_VERSION": "ignoreCommerceVersion",
-            "ENVIROMENT_URL": "enviromentUrl",
-            "APP_KEY": "key",
-            "NOTIFY_UPDATES": "notifyUpdates",
-            "MIGRATE_CONFIGS": "migrateConfigOnTransfer",
-            "LANGUAGE":"language",
-            "FILE_TRACKING": "enableSessionFileTracking",
-            "SHOW_NOTIFICATIONS":"notifyActions"
-        }
-    },
-    "STORAGE": {
-        "VERSION": "VERSION",
-        "SHOW_UPDATES": "SHOW_UPDATES"
-    },
-    "ITEM_TYPES":{
-        "DOWNLOAD": "DOWNLOAD",
-        "UPLOAD": "UPLOAD",
-        "MIGRATION": "MIGRATION"
-    },
-    "EDITORS": {
-        "LOG": "Log",
-        "LESS": "less",
-        "TEMPLATE": "template",
-        "JSON": "js",
-        "JS": "js"
-    },
-    "VERSIONS": {
-        "RELEASES": [{
-            "V": "0.0.1",
-            "id": "100"
-        }, {
-            "V": "0.0.3",
-            "id": "110"
-        }, {
-            "V": "1.1.0",
-            "id": "110"
-        },
-        {
-            "V": "1.1.0",
-            "id": "110"
-        },{
-            "V": "2.0.0",
-            "id": "200"
-        },{
-            "V": "2.1.0",
-            "id": "210"
-        },
-        {
-            "V": "3.0.0",
-            "id": "300"
-        }],
-        "FIXES": [{
-            "V": "0.0.2",
-            "id": "101"
-        },{
-            "V": "2.0.1",
-            "id": "201"
-        },{
-            "V": "2.0.2",
-            "id": "202"
-        },{
-            "V": "2.0.3",
-            "id": "203"
-        },
-        {
-            "V": "2.1.1",
-            "id": "211"
-        }],
-        "ALL": [{
-            "V": "0.0.1",
-            "id": "100",
-            "TYPE": "R"
-        }, {
-            "V": "0.0.2",
-            "id": "100",
-            "TYPE": "R"
-        }, {
-            "V": "0.0.3",
-            "id": "110",
-            "TYPE": "R"
-        }, {
-            "V": "1.1.0",
-            "id": "110",
-            "TYPE": "R"
-        },{
-            "V": "2.0.0",
-            "id": "200",
-            "TYPE": "R"
-        },
-        {
-            "V": "2.0.1",
-            "id": "201",
-            "TYPE": "F"
-        },{
-            "V": "2.0.2",
-            "id": "202",
-            "TYPE": "F"
-        },{
-            "V": "2.0.3",
-            "id": "203",
-            "TYPE": "F"
-        },{
-            "V": "2.1.0",
-            "id": "210",
-            "TYPE": "R"
-        },{
-            "V": "2.1.1",
-            "id": "211",
-            "TYPE":"F"
-        },{
-            "V": "3.0.0",
-            "id": "300",
-            "TYPE":"R"
-        }]
-    }    
+	"HOT_FIX": "HF",
+	"RELEASE": "R",
+	"SI": "SI",
+	"NO": "NO",
+	"NUNCA": "NUNCA",
+	"PREGUNTAR": "PREGUNTAR",
+	"SIEMPRE": "SIEMPRE",
+	"BASICOS": "BÁSICOS",
+	"TODOS": "TODOS",
+	"NUEVA": "NUEVA",
+	"NUEVO": "NUEVO",
+	"CONTINUAR": "CONTINUAR",
+	"CANCELAR": "CANCELAR",
+	"SOLO_ERRORES": "SOLO ERRORES",
+	"UPDATE_TYPES":{
+		"NEW":"NEW",
+		"MAJOR":"MAJOR",
+		"MINOR":"MINOR",
+		"FIX":"FIX"
+	},
+	"VALID_PATHS": [
+		"widget",
+		"element",
+		"global",
+		"snippets",
+		"theme",
+		"siteSettings",
+		"stack"
+	],
+	"INSTANCABLES_FILES": [
+		".template",
+		".less",
+		"ns."
+	],
+	"CONFIGURABLE_TYPES": [
+		"widget",
+		"element"
+	],
+	"UNNESTEABLE_COMPONENTS": [
+		"global",
+		"snippets"
+	],
+	"STATUS": {
+		"SUCCESS": "success",
+		"FAIL": "fail",
+		"WARN": "warning",
+		"INCOMPLETE": "incomplete"
+	},
+	"COMPONENTS": {
+		"WIDGET": "widget",
+		"ELEM": "element",
+		"THEME": "theme",
+		"GLOBAL": "global",
+		"SNIPPET": "snippets",
+		"SITE_SETTINGS": "siteSettings"
+	},
+	"MGS_TYPES": {
+		"INFO": "INFO",
+		"SUCCESS": "INFO",
+		"WARN": "WARN",
+		"ERROR": "ERROR",
+		"LOG": "LOG"
+	},
+	"ENV": {
+		"DEV": "DEV",
+		"TEST": "TEST",
+		"STAGE": "STAGE",
+		"PROD": "PROD",
+		"ALL": [
+			"DEV",
+			"TEST",
+			"STAGE",
+			"PROD"
+		]
+	},
+	"CONFIG": {
+		"ENVS": [
+			"DEV",
+			"TEST",
+			"STAGE",
+			"PROD"
+		],
+		"GENERAL": {
+			"NAME": "dcu.1.general",
+			"PROPS": {
+				"NOTIFY_UPDATES": "notifyUpdates",
+				"FILE_TRACKING": "enableSessionFileTracking",
+				"SHOW_NOTIFICATIONS": "notifyActions"
+			}
+		},
+		"DCU":{
+			"NAME":"dcu.1.dcu",
+			"PROPS":{
+				"UPDATE_ALL_INSTANCES": "updateAllInstances",
+				"MIGRATE_CONFIGS": "migrateConfigOnTransfer",
+				"COPY_COMMAND":"copyCommand"
+			}
+		},
+		"PLSU":{
+			"NAME": "dcu.1.plsu",
+			"PROPS":{
+				"IGNORE_COMMERCE_VERSION": "ignoreCommerceVersion",
+				"FETCH_LAYOUTS": "fetchLayouts"
+			}
+		},
+		"CCW": {
+			"NAME":"dcu.1.ccw",
+			"PROPS":{
+				"WIDGET_LANGUAGES": "widgetLanguages"
+			}
+		},
+		"SSE": {
+			"NAME":"dcu.1.sse",
+			"PROPS":{
+				"USE_ZIP_NAME":"useZipName"
+			}
+		},
+		"THIRD_PARTY": {
+			"NAME":"dcu.1.thirdParty",
+			"PROPS":{
+				"USE_ZIP_NAME":"useFileName"
+			}
+		},
+		"DEV": "dcu.2.dev",
+		"TEST": "dcu.3.test",
+		"STAGE": "dcu.4.stage",
+		"PROD": "dcu.5.prod",
+		"PROPS": {
+			"ENVIROMENT_URL": "enviromentUrl",
+			"APP_KEY": "key"
+		},
+		"QUESTIONS": {
+			"updateAllInstances": "Estas por subir un archivo base. ¿Quieres actualizar todas las instancias?",
+			"notifyUpdates": "Hay una nueva actualización, ¿Quieres ver las novedades?",
+			"migrateConfigOnTransfer": "¿Migrar configuraciones?",
+			"widgetLanguages": "¿Qué archivos de locales deseas mantenter?"
+		}
+	},
+	"STORAGE": {
+		"VERSION": "VERSION",
+		"SHOW_UPDATES": "SHOW_UPDATES"
+	},
+	"ITEM_TYPES": {
+		"DOWNLOAD": "DOWNLOAD",
+		"UPLOAD": "UPLOAD",
+		"MIGRATION": "MIGRATION"
+	},
+	"EDITORS": {
+		"LOG": "Log",
+		"LESS": "less",
+		"TEMPLATE": "template",
+		"JSON": "js",
+		"JS": "js"
+	},
+	"ACTIONS": {
+		"ALL": [
+			"$(extensions-install-count) GRAB",
+			"$(references) MIGRAR LAYOUTS",
+			"$(file-directory-create) CREAR WIDGET",
+			"$(output-view-icon) CREATE SNIPPETS",
+			"──────────────────────────────────────────────",
+			"$(diff-added) SUBIR THIRD-PARTY-FILE",
+			"$(diff-removed) ELIMINAR THIRD-PARTY-FILES",
+			"──────────────────────────────────────────────",
+			"$(file-zip)$(extensions-install-count) DESCARGAR SSE",
+			"$(file-zip)$(diff-insert) SUBIR SSE",
+			"$(file-zip)$(diff-review-close) ELIMINAR SSE",
+			"──────────────────────────────────────────────",
+			"$(key) COPIAR APP_KEY",
+			"$(ports-open-browser-icon) COPIAR URL"
+		],
+		"PLSU": "MIGRAR LAYOUTS",
+		"CCW": "CREAR WIDGET",
+		"THIRD": "SUBIR THIRD-PARTY-FILE",
+		"DEL_THIRD": "ELIMINAR THIRD-PARTY-FILES",
+		"GRAB": "GRAB",
+		"KEY": "COPIAR APP_KEY",
+		"NODE": "COPIAR URL",
+		"FEEDBACK": "FEEDBACK",
+		"SNIPPETS": "CREATE SNIPPETS",
+		"SSE_DOWNLOAD": "DESCARGAR SSE",
+		"SSE_UPLOAD": "SUBIR SSE",
+		"SSE_DELETE": "ELIMINAR SSE"
+	},
+	"FEEDBACK_TYPES": {
+		"ALL": [
+			"SUGESTION",
+			"ERROR",
+			"QUESTION",
+			"FEEDBACK"
+		],
+		"SUGESTION": "SUGESTION",
+		"ERROR": "ERROR",
+		"QUESTION": "QUESTION",
+		"FEEDBACK": "FEEDBACK"
+	},
+	"LOCALE_LIST": [
+		"ar",
+		"bg",
+		"ca",
+		"cs",
+		"da",
+		"de",
+		"el",
+		"en",
+		"en_AU",
+		"en_CA",
+		"en_GB",
+		"en_US",
+		"es",
+		"et",
+		"fi",
+		"fr",
+		"fr_CA",
+		"hr",
+		"hu",
+		"in",
+		"it",
+		"ja",
+		"ko",
+		"lt",
+		"lv",
+		"ms",
+		"nl",
+		"no",
+		"pl",
+		"pt",
+		"pt_BR",
+		"ro",
+		"ru",
+		"sl",
+		"sr",
+		"sr_Latn",
+		"sv",
+		"th",
+		"tr",
+		"uk",
+		"vi",
+		"zh_Hans",
+		"zh_Hant"
+	],
+	"LOCALE_LIST_BASIC": [
+		"en",
+		"es"
+	],
+	"CCW": {
+		"QUESTIONS": {
+			"es": [
+				"INTRODUCIR EL NOMBRE DE NUEVO WIDGET",
+				"¿EL NUEVO WIDGET ES GLOBAL? (LOS WIDGET GLOBALES SE CARGAN EN CADA PÁGINA PERO NO TIENEN PLANTILLA DE VISUALIZACIÓN)",
+				"¿EL NUEVO WIDGET NECESITA INTERNACIONALIZACIÓN?",
+				"¿EL NUEVO WIDGET ES CONFIGURABLE?",
+				"¿EL NUEVO WIDGET DEBE CONTENER CÓDIGO DE ORIGEN DE EJEMPLO?",
+				"¿EL NUEVO WIDGET NECESITA FRAGMENTACIÓN?",
+				"¿EL NUEVO WIDGET DEBE ENVIARSE A LA INSTANCIA DE INMEDIATO?"
+			],
+			"en": [
+				"ENTER THE NAME OF THE NEW WIDGET",
+				"IS THE NEW WIDGET GLOBAL? (GLOBAL WIDGETS ARE LOADED ON EVERY PAGE BUT HAVE NO DISPLAY TEMPLATE)",
+				"DOES THE NEW WIDGET REQUIRE INTERNATIONALIZATION?",
+				"IS THE NEW WIDGET CONFIGURABLE?",
+				"SHOULD THE NEW ELEMENT CONTAIN EXAMPLE SOURCE CODE?",
+				"DOES THE NEW WIDGET REQUIRE FRAGMENTATION?",
+				"SHOULD THE NEW WIDGET BE SENT TO THE INSTANCE IMMEDIATELY?"
+			],
+			"pt": [
+				"INFORME O NOME DO NOVO WIDGET",
+				"O NOVO WIDGET É GLOBAL? (OS WIDGETS GLOBAIS SÃO CARREGADOS EM TODAS AS PÁGINAS, MAS NÃO TEM MODELO DE EXIBIÇÃO)",
+				"O NOVO WIDGET EXIGE INTERNACIONALIZAÇÃO?",
+				"O NOVO WIDGET É CONFIGURÁVEL?",
+				"O NOVO WIDGET DEVE CONTER UM CÓDIGO-FONTE DE EXEMPLO?",
+				"O NOVO WIDGET EXIGE FRAGMENTAÇÃO?",
+				"O NOVO WIDGET DEVE SER ENVIADO PARA A INSTÂNCIA IMEDIATAMENTE?"
+			]
+		},
+		"ALREADY_EXISTS": {
+			"es": "ya existe",
+			"en": "already exists",
+			"pt": "já existe"
+		},
+		"LANGUAGE_CHECKER": {
+			"URL for the Commerce Cloud administration interface": "en",
+			"URL para la interfaz de administración de Commerce Cloud": "es",
+			"URL da interface de administração do Commerce Cloud": "pt"
+		}
+	}
 }

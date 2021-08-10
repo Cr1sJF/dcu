@@ -7,18 +7,20 @@ BUGS:
 
 IDEAS:
 
-- Nombre de componentes no caseSensitive
-- Administracion de notificaciones (Solo LOG, log y notificaciones)
-- Listar layouts a migrar
-- Semaforos en acciones
-- Confirmaciones cuando migrar a prod
-- Menu contextual en carpetas derecha
-- Soporte para rutas en grab
+- Nombre de componentes no caseSensitive -> LISTO
+- Administracion de notificaciones (Solo LOG, log y notificaciones) -> LISTO
+- Listar layouts a migrar -> LISTO
+- Semaforos en acciones 
+- Confirmaciones cuando migrar a prod -> LISTO
+- Menu contextual en carpetas derecha  -> LISTO
+- Soporte para rutas en grab -> LISTO
 - Creacion de widgets, [siteSettings], elemento
-- Agregar selector de Ambiente
-- Encapsular consultas al usuario
-- Agregar shortCuts
-- Modo serio/modo cris
+
+- Encapsular consultas al usuario  -> LISTO
+- Agregar shortCuts -> LISTO
+- Agregar metodo para copiar la key de un ambiente -> LISTO
+- Copiar comando en ERROR -> LISTO
+- Add snippet globalFn 
 
 
 LISTO:

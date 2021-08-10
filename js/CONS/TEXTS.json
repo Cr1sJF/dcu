@@ -1,0 +1,111 @@
+{
+	"PICK_ENV": "Seleccione un ambiente",
+	"NO_ENV_SELECTED": "No se seleccionó ningún ambiente",
+	"CREATE_WIDGET": "Creación de Widget",
+	"STATUS": "STATUS",
+	"CHOOSE_SITE":"Seleccione sitio",
+	"CHOOSE_ORIGIN":"Seleccione el origen",
+	"CHOOSE_DESTINATION":"Seleccione el destino",
+	"ERROR": "ERROR",
+	"CONFIRM_PROD_ACTION":"Esta por realizar una accion en el ambiente de PROD, ¿Continuar?",
+	"PICK_OCC_FOLDER":"Seleccione una carpeta de OCC",
+	"LOAD_COMPONENT":"Cargue un componente",
+	"LOAD_COMPONENT_PLACEHOLDER":"widgetName/elementName/global/theme/snippet",
+	"ERRORS": {
+		"NO_FILE_OPEN": "No se encontro un archivo abierto",
+		"SNIPPET_EXTRACTION_WRONG_FILE": "La extracción de snippets solo funciona en archivos 'configMetadata.json'",
+		"NO_ENV_VALID_CONFIG":"No se encontró una configuracion valida para el ambiente seleccionado",
+		"MISSING_COMPONENT":"No se encontró el componente"
+	},
+	"MSGS": {
+		"GRAB_START": "Iniciando grab de @@envName@@...",
+		"GRAB_OK": "Código descargado correctamente",
+		"GRAB_ERROR": "Error descargando código de @@envName@@",
+		"PUT_START": "Subiendo @@componentName@@...",
+		"PUT_OK": "@@componentName@@ subido correctamente",
+		"PUT_ERROR": "Error subiendo @@componentName@@",
+		"PUT_ALL_START": "Subiendo @@componentName@@...",
+		"PUT_ALL_OK": "@@componentName@@ subido correctamente",
+		"PUT_ALL_ERROR": "Error subiendo los archivos de @@componentName@@",
+		"REFRESH_STRAT": "Actualizando @@componentName@@...",
+		"REFRESH_OK": "@@componentName@@ actualizado correctamente",
+		"REFRESH_ERROR": "Error actualizando @@componentName@@",
+		"TRANSFER_START": "Enviando @@componentName@@ a @@destEnv@@...",
+		"TRANSFER_OK": "@@componentName@@ enviado a @@destEnv@@ correctamente",
+		"TRANSFER_ERROR": "Error enviando @@componentName@@ a @@destEnv@@",
+		"PLSU_START": "Clonando @@layoutName@@ en @@destEnv@@...",
+		"PLSU_OK": "@@layoutName@@ actualizado correctamente en @@destEnv@@",
+		"PLSU_ERROR": "Error actualizando @@layoutName@@ en @@destEnv@@"
+	},
+	"GRAB": {
+		"PICK_GRAB_FOLDER": "Seleccione donde hacer el GRAB",
+		"GRAB_TASK": "Descargar ambiente"
+	},
+	"UPDATE_COMPONENT": {
+		"UPDATE_COMPONENT_TASK": "Actualizar componente"
+	},
+	"PUT_FILE": {
+		"PUT_FILE_TASK": "Subir archivo"
+	},
+	"PUT_FOLDER": {
+		"PUT_FOLDER_TASK": "Subir componente"
+	},
+	"TRANSFER_FILE": {
+		"TRANSFER_FILE_TASK": "Migrar archivo"
+	},
+	"TRANSFER_FOLDER": {
+		"TRANSFER_FOLDER_TASK": "Migrar componente"
+	},
+	"TRANSFER_LAYOUT": {
+		"WARNING_MIGRATE_WIDGETS": "Antes de continuar, asegurese de haber migrado todos los widgets relacionados",
+		"TRANSFER_LAYOUTS_TASK": "MIGRACIÓN DE LAYOUTS"
+	},
+	"WIDGET_CREATION": {
+		"WIDGET_CREATION_TASK": "Creación de Widget",
+		"WIDGET_CREATION_START": "Creando widget",
+		"WIDGET_CREATION_SUCCESS": "@@widgetName@@ Creado correctamente en @@envName@@",
+		"WIDGET_CREATION_FAIL": "Error creando @@widgetName@@",
+		"INPUT_WIDGET_NAME": "Ingrese el nombre del widget",
+		"REQUIRE_ELEMENTS": "¿El widget requiere Elementos?",
+		"CHOOSE_LOCALES": "Seleccione los locales que desea mantener"
+	},
+	"MORE_FN": {
+		"KEY_COPPIED": "Key copiada correctamente",
+		"URL_COPPIED": "URL copiada correctamente",
+		"CHOOSE_FEEDBACK": "Seleccione un tipo de Feedback",
+		"MESSAGE": "Mensaje",
+		"CHOOSE_ACTION": "Seleccione una acción"
+	},
+	"THIRD_PARTY": {
+		"UPLOAD_FILE_TASK": "SUBIR THIRD-PARTY-FILE",
+		"INPUT_FILE_NAME": "Ingrese el nombre del archivo a subir. Deje vacío para usar el mismo nombre del archivo seleccionado",
+		"UPLOAD_FILE_START": "Subiendo ThirdPartyFile",
+		"UPLOAD_FILE_SUCCESS": "ThirdPartyFile cargado correctamente",
+		"UPLOAD_FILE_FAIL": "Error subiendo ThirdPartyFile",
+		"UPLOAD_FILE_TRACKING": "THIRDPARTY",
+		"DELETE_FILE_TASK": "ELIMINAR THIRD-PARTY-FILE",
+		"DELETE_FILE_START": "Eliminando ThirdPartyFile",
+		"DELETE_FILE_SUCCESS": "ThirdPartyFile eliminado correctamente",
+		"DELETE_FILE_FAIL": "Error eliminando ThirdPartyFile",
+		"DELETE_FILE_TRACKING": "THIRDPARTY"
+	},
+	"SSE": {
+		"INPUT_SSE_FILE": "Seleccione la SSE para subir",
+		"INPUT_SSE_NAME": "Ingrese el nombre de SSE (Vacío para usar el mismo nombre del archivo .zip)",
+		"CHOOSE_DOWNLOAD_FOLDER":"Seleccione donde guardar el archivo",
+		"CHOOSE_DOWNLOAD_SSE":"Seleccione SSE para descargar",
+		"CHOOSE_SSE_TO_DELETE":"Seleccione SSE para eliminar"
+	},
+	"INIT_MSGS":{
+		"INITIALIZING":"Iniciando DCU...",
+		"SEARCHING_FOLDERS":"Buscando carpetas de OCC...",
+		"FILTERING_FOLDERS":"Filtrando carpetas...",
+		"LOADING_ENVIRONMENTS": "Cargando Ambientes configurados...",
+		"VALIDATING_VERSION":"Validando versión...",
+		"INITIALIZING_FILE_TRACKING":"Iniciando Tracking de archivos"
+	},
+	"FILE_TRACKING":{
+		"OUTPUT_NAME":"DCU FILE TRACKING",
+		"SESSION_STARTED":"********* SESIÓN INICIADA **********"
+	}
+}

@@ -1,755 +1,957 @@
 const vscode = require("vscode");
-const dcu = require("./js/dcu");
-const DcuItem = require("./js/DcuItemBar");
-// const cmd = require("node-cmd");
-const Shell = require("node-powershell");
+const DcuItem = require("./js/models/DcuItemBar");
+const Environment = require("./js/models/Environment");
+const Command = require("./js/models/Command");
+const ThirdParty = require("./js/models/thirdParty");
+const SSE = require("./js/models/SSE");
+const CCW = require("./js/models/CCW");
+const PLSU = require("./js/models/PLSU");
 
-const fs = require("fs");
-let STORAGE;
-// const CONSTANTS = JSON.parse(fs.readFileSync('./js/CONSTANTS.json', 'utf-8'));
+const dcu = require("./js/controllers/dcu");
 const CONSTANTS = require("./js/CONS/CONSTANTS.json");
-const test = new DcuItem({
-  command: "dcu.test",
-  icon: "callstack-view-session",
-  tooltip: "",
-  type: CONSTANTS.ITEM_TYPES.DOWNLOAD,
-  msg: {
-    start: CONSTANTS.MSGS.GRAB_START,
-    success: CONSTANTS.MSGS.GRAB_OK,
-    error: CONSTANTS.MSGS.GRAB_ERROR,
-    trackingMsg: "Descargaste el ambiente @@envName@@",
-    warn: "",
-  },
-});
-const grab = new DcuItem({
-  command: "dcu.grab",
-  icon: "extensions-install-count",
-  tooltip: "Descargar ambiente",
-  type: CONSTANTS.ITEM_TYPES.DOWNLOAD,
-  msg: {
-    start: CONSTANTS.MSGS.GRAB_START,
-    success: CONSTANTS.MSGS.GRAB_OK,
-    error: CONSTANTS.MSGS.GRAB_ERROR,
-    trackingMsg: "Descargaste el ambiente @@envName@@",
-    warn: "",
-  },
-});
-const updateWidget = new DcuItem({
-  command: "dcu.e",
-  icon: "extensions-sync-enabled",
-  tooltip: "Actualizar Widget",
-  type: CONSTANTS.ITEM_TYPES.DOWNLOAD,
-  msg: {
-    start: CONSTANTS.MSGS.REFRESH_STRAT,
-    success: CONSTANTS.MSGS.REFRESH_OK,
-    error: CONSTANTS.MSGS.REFRESH_ERROR,
-    trackingMsg: "Descargaste de @@envName@@: \n@@componentName@@",
-    warn: "",
-  },
-});
-const putFile = new DcuItem({
-  command: "dcu.t",
-  icon: "chevron-up",
-  tooltip: "Subir archivo",
-  type: CONSTANTS.ITEM_TYPES.UPLOAD,
-  msg: {
-    start: CONSTANTS.MSGS.PUT_START,
-    success: CONSTANTS.MSGS.PUT_OK,
-    error: CONSTANTS.MSGS.PUT_ERROR,
-    trackingMsg: "Subiste a @@envName@@: \n@@fileName@@",
-    warn: "",
-  },
-});
-const putFolder = new DcuItem({
-  command: "dcu.m",
-  icon: "fold-up",
-  tooltip: "Subir Widget",
-  type: CONSTANTS.ITEM_TYPES.UPLOAD,
-  msg: {
-    start: CONSTANTS.MSGS.PUT_ALL_START,
-    success: CONSTANTS.MSGS.PUT_ALL_OK,
-    error: CONSTANTS.MSGS.PUT_ALL_ERROR,
-    trackingMsg: "Subiste a @@envName@@: \n@@componentName@@",
-    warn: "",
-  },
-});
-const transferFile = new DcuItem({
-  command: "dcu.r",
-  icon: "run",
-  tooltip: "Migrar archivo",
-  type: CONSTANTS.ITEM_TYPES.MIGRATION,
-  msg: {
-    start: CONSTANTS.MSGS.TRANSFER_START,
-    success: CONSTANTS.MSGS.TRANSFER_OK,
-    error: CONSTANTS.MSGS.TRANSFER_ERROR,
-    trackingMsg: "Migraste a @@destEnv@@: \n@@componentName@@",
-    warn: "",
-  },
-});
-const transferFolder = new DcuItem({
-  command: "dcu.x",
-  icon: "run-all",
-  tooltip: "Migrar Widget",
-  type: CONSTANTS.ITEM_TYPES.MIGRATION,
-  msg: {
-    start: CONSTANTS.MSGS.TRANSFER_START,
-    success: CONSTANTS.MSGS.TRANSFER_OK,
-    error: CONSTANTS.MSGS.TRANSFER_ERROR,
-    trackingMsg: "Migraste a @@destEnv@@: \n@@componentName@@",
-    warn: "",
-  },
-});
-const migrateLayout = new DcuItem({
-  command: "plsu.y",
-  icon: "references",
-  tooltip: "Migrar Layout",
-  type: CONSTANTS.ITEM_TYPES.MIGRATION,
-  msg: {
-    start: CONSTANTS.MSGS.PLSU_START,
-    success: CONSTANTS.MSGS.PLSU_OK,
-    error: CONSTANTS.MSGS.PLSU_ERROR,
-    trackingMsg: "Migraste a @@destEnv@@: \n@@layoutName@@",
-    warn: "",
-  },
-});
-// const debug = new DcuItem({
-// 	command: "debug",
-// 	icon: "callstack-view-session",
-// 	show: true
-// });
-function registerCommands() {
-  try {
-    vscode.commands.registerCommand("dcu.test", async () => {
-      vscode.window
-        .showQuickPick([CONSTANTS.ENV.DEV, CONSTANTS.ENV.TEST, CONSTANTS.ENV.STAGE, CONSTANTS.ENV.PROD], {
-          ignoreFocusOut: true,
-          placeHolder: "Seleccione un ambiente para crear el widget",
-        })
-        .then((item) => {
-          if (!item) {
-            dcu.error("No se seleccionó ningún ambiente");
-            return;
-          }
-          if (!dcu.getConfig(CONSTANTS.CONFIG[item], CONSTANTS.CONFIG.PROPS.ENVIROMENT_URL) || !dcu.getConfig(CONSTANTS.CONFIG[item], CONSTANTS.CONFIG.PROPS.APP_KEY)) {
-            dcu.error({
-              msg: CONSTANTS.MSGS.GRAB_ERROR,
-              detail: "No se encuentra configuración para el ambiente seleccionado",
-              replace: {
-                envName: item,
-              },
-            });
-            return;
-          } else {
-            let key = dcu.getConfig(CONSTANTS.CONFIG[item], CONSTANTS.CONFIG.PROPS.APP_KEY);
+const TEXTS = require("./js/CONS/TEXTS.json");
+const infoRequest = require("./js/controllers/infoRequest");
+const logger = require("./js/controllers/logger");
+const utils = require("./js/utils");
+const copyPaste = require("copy-paste");
+const fs = require("fs");
 
-            // childProcess.stdin.write('ASD\n');
+let isRunningCommand = false;
+let STORAGE;
 
-            // //& ccw -w -k ${key} & tstWdg & n & s & s & n & n & n & n
-            // cmd.run(`ccw -w -k ${key}`, function (error, data, stderr) {
-            // 	console.info(data);
-            // 	console.error(error);
-            // 	console.warn(stderr);
-            // });
-          }
-        });
-    });
-    vscode.commands.registerCommand("dcu.e", async (externalFile) => {
-      let editor;
-      if (!externalFile) {
-        editor = vscode.window.visibleTextEditors.find((editor) => {
-          return editor.document.languageId != CONSTANTS.EDITORS.LOG;
-        });
-      }
-      let command, env;
-      if (editor || externalFile) {
-        if (externalFile) {
-          env = dcu.findEnvironment(externalFile);
-        } else {
-          env = dcu.findEnvironment();
-        }
-        if (
-          env.componentName.toUpperCase() == CONSTANTS.COMPONENTS.GLOBAL.toUpperCase() ||
-          env.componentName.toUpperCase() == CONSTANTS.COMPONENTS.THEME.toUpperCase() ||
-          env.componentName.toUpperCase() == CONSTANTS.COMPONENTS.SNIPPET.toUpperCase() ||
-          env.componentName.toUpperCase() == CONSTANTS.COMPONENTS.SITE_SETTINGS.toUpperCase()
-        ) {
-          command = `dcu -e "${env.componentName}" -k ${env.key}`;
-        } else {
-          command = `dcu -e "${env.fileType}/${env.componentName}" -k ${env.key}`;
-        }
-      } else {
-        if (vscode.workspace.workspaceFolders.length == 0) {
-          dcu.error("No hay carpetas abiertas");
-          return;
-        }
-        let occFolders = vscode.workspace.workspaceFolders.filter((folder) => {
-          let dir = fs.readdirSync(folder.uri.fsPath);
-          return dir.indexOf(".ccc") != -1;
-        });
-        let item;
-        if (occFolders.length == 0) {
-          dcu.error("Ninguna carpeta abierta posee codigo de OCC");
-          return;
-        } else if (occFolders.length == 1) {
-          item = occFolders[0].name;
-        } else {
-          let options = occFolders.map((folder) => {
-            return folder.name;
-          });
-          item = await vscode.window.showQuickPick(options, {
-            ignoreFocusOut: true,
-            placeHolder: "Seleccione un ambiente donde actualizar el widget",
-          });
-        }
-        if (item) {
-          let comp = await vscode.window.showInputBox({
-            ignoreFocusOut: true,
-            placeHolder: "widgetName/elementName/global/theme/snippet (En widgets y elementos se deben respetar mayusculas y minusculas)",
-            prompt: "Que componente desea actualizar?",
-          });
-          if (comp) {
-            let folder;
-            folder = occFolders.find((fold) => {
-              return fold.name == item;
-            });
-            env = dcu.findEnvironment(folder.uri.path);
-            env.componentName = comp;
-            if (comp.toUpperCase() == CONSTANTS.COMPONENTS.GLOBAL.toUpperCase() || comp.toUpperCase() == CONSTANTS.COMPONENTS.THEME.toUpperCase() || comp.toUpperCase() == CONSTANTS.COMPONENTS.SNIPPET.toUpperCase()) {
-              command = `dcu -e ${comp.toLocaleLowerCase()} -k ${env.key}`;
-            } else {
-              let folderInfo = fs.readdirSync(folder.uri.fsPath + "/element");
-              if (folderInfo.indexOf(comp) != -1) {
-                command = `dcu -e "element/${comp}" -k ${env.key}`;
-              } else {
-                let folderInfo = fs.readdirSync(folder.uri.fsPath + "/widget");
-                if (folderInfo.indexOf(comp) != -1) {
-                  command = `dcu -e "widget/${comp}" -k ${env.key}`;
-                } else {
-                  dcu.error("No se encontro el componente");
-                  return;
-                }
-              }
-            }
-          }
-        }
-      }
-      updateWidget.task = command;
-      dcu.runCommand(
-        updateWidget,
-        env,
-        {
-          componentName: env.componentName,
-        },
-        null,
-        null
-      );
-    });
-    vscode.commands.registerCommand("dcu.grab", (externalFile) => {
-      vscode.window
-        .showQuickPick([CONSTANTS.ENV.DEV, CONSTANTS.ENV.TEST, CONSTANTS.ENV.STAGE, CONSTANTS.ENV.PROD], {
-          ignoreFocusOut: true,
-          placeHolder: "Seleccione un ambiente para descargar",
-        })
-        .then((item) => {
-          if (!item) {
-            dcu.error("No se seleccionó ningún ambiente");
-            return;
-          }
-          if (!dcu.getConfig(CONSTANTS.CONFIG[item], CONSTANTS.CONFIG.PROPS.ENVIROMENT_URL) || !dcu.getConfig(CONSTANTS.CONFIG[item], CONSTANTS.CONFIG.PROPS.APP_KEY)) {
-            dcu.error({
-              msg: CONSTANTS.MSGS.GRAB_ERROR,
-              detail: "No se encuentra configuración para el ambiente seleccionado",
-              replace: {
-                envName: item,
-              },
-            });
-            return;
-          }
-          if (externalFile) {
-            const node = dcu.getConfig(CONSTANTS.CONFIG[item], CONSTANTS.CONFIG.PROPS.ENVIROMENT_URL);
-            const key = dcu.getConfig(CONSTANTS.CONFIG[item], CONSTANTS.CONFIG.PROPS.APP_KEY);
-            grab.task = `dcu -g -c -n "${node}"-k ${key}`;
-            dcu.runCommand(
-              grab,
-              {
-                basePath: dcu.buildPath(externalFile).basePath,
-                env: item,
-              },
-              {
-                envName: item,
-              },
-              null,
-              null
-            );
-          } else if (vscode.workspace.workspaceFolders.length === 0) {
-            dcu.error({
-              msg: CONSTANTS.MSGS.GRAB_ERROR,
-              detail: "No hay carpetas abiertas para descargar el código. Agregue o cree una e intente nuevamente",
-              replace: {
-                envName: item,
-              },
-            });
-            return;
-          } else {
-            vscode.window
-              .showWorkspaceFolderPick({
-                ignoreFocusOut: true,
-                placeHolder: "Seleccione una carpeta donde descargar el código",
-              })
-              .then((folder) => {
-                if (!folder) {
-                  dcu.error({
-                    msg: CONSTANTS.MSGS.GRAB_ERROR,
-                    detail: "No se seleccionó ninguna carpeta",
-                    replace: {
-                      envName: item,
-                    },
-                  });
-                }
-                const node = dcu.getConfig(CONSTANTS.CONFIG[item], CONSTANTS.CONFIG.PROPS.ENVIROMENT_URL);
-                const key = dcu.getConfig(CONSTANTS.CONFIG[item], CONSTANTS.CONFIG.PROPS.APP_KEY);
-                grab.task = `dcu -g -c -n "${node}"-k ${key}`;
-                dcu.runCommand(
-                  grab,
-                  {
-                    basePath: folder.uri.fsPath,
-                  },
-                  {
-                    envName: item,
-                  },
-                  null,
-                  null
-                );
-              });
-          }
-        });
-    });
-    vscode.commands.registerCommand("dcu.t", async () => {
-      let editor = vscode.window.visibleTextEditors.find((editor) => {
-        return editor.document.languageId != CONSTANTS.EDITORS.LOG;
-      });
-      if (!editor) {
-        dcu.error("No hay archivos abiertos");
-        return;
-      }
-      let filePath = editor.document.uri.path.split("/").splice(1);
-      let fileData = filePath[filePath.length - 1].split(".");
-      let file;
-      if (fileData.length > 2) {
-        file = {
-          fileName: fileData[0] + "." + fileData[1],
-          fileExtension: fileData[2],
-          fileFullname: fileData.join("."),
-        };
-      } else {
-        file = {
-          fileName: fileData[0],
-          fileExtension: fileData[1],
-          fileFullname: fileData.join("."),
-        };
-      }
-      let instanciable = CONSTANTS.INSTANCABLES_FILES.some((f) => {
-        return file.fileFullname.indexOf(f) != -1;
-      });
-      const env = dcu.findEnvironment();
-      if (env) {
-        let updateAllInstances = dcu.getConfig(CONSTANTS.CONFIG.GENERAL, CONSTANTS.CONFIG.PROPS.UPDATE_ALL_INSTANCES);
-        editor.document.save();
-        let isBaseFile = editor.document.uri.path.indexOf("instances") != -1 ? false : true;
-        let task = "dcu ";
-        if (updateAllInstances == CONSTANTS.SIEMPRE || updateAllInstances == true) {
-          task += `${instanciable ? "- i " : ""} -t "${editor.document.uri.fsPath}" -k ${env.key}`;
-        } else if (updateAllInstances == CONSTANTS.NUNCA) {
-          task += `-t "${editor.document.uri.fsPath}" -k ${env.key}`;
-        } else if (updateAllInstances == CONSTANTS.PREGUNTAR) {
-          let resp;
-          if (instanciable && isBaseFile) {
-            resp = await dcu.warn({
-              msg: `Estas por subir un archivo base. ¿Quieres actualizar todas las instancias?`,
-              items: [CONSTANTS.SI, CONSTANTS.NO],
-            });
-          } else {
-            resp = CONSTANTS.NO;
-          }
-          task += `${resp == CONSTANTS.SI ? " -i -t " : " -t "} "${editor.document.uri.fsPath}" -k ${env.key}`;
-        } else if (updateAllInstances == CONSTANTS.SOLO_SI_BASE) {
-          task += `${isBaseFile && instanciable ? " -i -t " : " -t "} "${editor.document.uri.fsPath}" -k ${env.key}`;
-        } else {
-          task += `-t "${editor.document.uri.fsPath}" -k ${env.key}`;
-        }
-        putFile.task = task;
-        let component = editor.document.uri.fsPath.split("\\");
-        let componentName;
-        CONSTANTS.VALID_PATHS.forEach((path) => {
-          if (component.indexOf(path) != -1) {
-            componentName = component.slice(component.indexOf(path)).join("/");
-          }
-        });
-        dcu.runCommand(
-          putFile,
-          env,
-          {
-            fileName: componentName,
-            componentName: env.componentName,
-          },
-          null,
-          null
-        );
-      }
-    });
-    vscode.commands.registerCommand("dcu.m", async () => {
-      let editor = vscode.window.visibleTextEditors.find((editor) => {
-        return editor.document.languageId != CONSTANTS.EDITORS.LOG;
-      });
-      let env, command;
-      if (editor) {
-        env = dcu.findEnvironment();
-        command = `dcu -m "${env.componentPath}" -k ${env.key}`;
-      } else {
-        if (vscode.workspace.workspaceFolders.length == 0) {
-          dcu.error("No hay carpetas abiertas");
-          return;
-        }
-        let occFolders = vscode.workspace.workspaceFolders.filter((folder) => {
-          let dir = fs.readdirSync(folder.uri.fsPath);
-          return dir.indexOf(".ccc") != -1;
-        });
-        let item;
-        if (occFolders.length == 0) {
-          dcu.error("Ninguna carpeta abierta posee codigo de OCC");
-          return;
-        } else if (occFolders.length == 1) {
-          item = occFolders[0].name;
-        } else {
-          let options = occFolders.map((folder) => {
-            return folder.name;
-          });
-          item = await vscode.window.showQuickPick(options, {
-            ignoreFocusOut: true,
-            placeHolder: "Seleccione un ambiente donde actualizar el widget",
-          });
-        }
-        if (item) {
-          let comp = await vscode.window.showInputBox({
-            ignoreFocusOut: true,
-            placeHolder: "widgetName/elementName/global/theme/snippet (En widgets y elementos se deben respetar mayusculas y minusculas)",
-            prompt: "Que componente desea actualizar?",
-          });
-          if (comp) {
-            let folder;
-            folder = occFolders.find((fold) => {
-              return fold.name == item;
-            });
-            env = dcu.findEnvironment(folder.uri.path);
-            env.componentName = comp;
-            if (comp.toUpperCase() == CONSTANTS.COMPONENTS.GLOBAL.toUpperCase() || comp.toUpperCase() == CONSTANTS.COMPONENTS.THEME.toUpperCase() || comp.toUpperCase() == CONSTANTS.COMPONENTS.SNIPPET.toUpperCase()) {
-              command = `dcu -m ${comp.toLocaleLowerCase()} -k ${env.key}`;
-            } else {
-              let folderInfo = fs.readdirSync(folder.uri.fsPath + "/element");
-              if (folderInfo.indexOf(comp) != -1) {
-                command = `dcu -m "element/${comp}" -k ${env.key}`;
-              } else {
-                let folderInfo = fs.readdirSync(folder.uri.fsPath + "/widget");
-                if (folderInfo.indexOf(comp) != -1) {
-                  command = `dcu -m "widget/${comp}" -k ${env.key}`;
-                } else {
-                  dcu.error("No se encontro el componente");
-                  return;
-                }
-              }
-            }
-          }
-        }
-      }
-      if (env) {
-        vscode.window.visibleTextEditors.forEach((editor) => {
-          editor.document.save();
-        });
-        putFolder.task = command;
-        dcu.runCommand(
-          putFolder,
-          env,
-          {
-            componentName: env.componentName,
-          },
-          null,
-          null
-        );
-      }
-    });
-    vscode.commands.registerCommand("dcu.r", async (externalFile) => {
-      let editor = vscode.window.visibleTextEditors.find((editor) => {
-        return editor.document.languageId != CONSTANTS.EDITORS.LOG;
-      });
-      let pathInfo, env;
-      if (editor) {
-        pathInfo = dcu.buildPath(editor.document.uri.path.substr(1));
-      } else if (externalFile) {
-        pathInfo = dcu.buildPath(externalFile.path);
-        env = dcu.findEnvironment(externalFile);
-      } else {
-        let path = await vscode.window.showInputBox({
-          ignoreFocusOut: true,
-          placeHolder: "c:/user/desktop/...",
-          prompt: "Coloque la url del archivo a migarar",
-        });
-        if (!path) {
-          dcu.error("No se cargo URL");
-          return;
-        }
-        pathInfo = dcu.buildPath(path);
-        env = dcu.findEnvironment(path);
-      }
-      // let pathSymbol = path.indexOf("/") != -1 ? "/" : "\\";
-      let dest = await vscode.window.showQuickPick(CONSTANTS.ENV.ALL, {
-        placeHolder: "Seleccione el destino",
-      });
-      // let fileName = path.split(pathSymbol)[path.split(pathSymbol).length - 1];
-      let fileName = pathInfo.componentName;
-      const envUrl = dcu.getConfig(CONSTANTS.CONFIG[dest], CONSTANTS.CONFIG.PROPS.ENVIROMENT_URL);
-      const envKey = dcu.getConfig(CONSTANTS.CONFIG[dest], CONSTANTS.CONFIG.PROPS.APP_KEY);
-      if (!envKey || !envUrl) {
-        dcu.error({
-          msg: CONSTANTS.MSGS.TRANSFER_ERROR,
-          detail: "No se encontró url o key de destino",
-          replaceOptions: {
-            componentName: fileName,
-            destEnv: dest,
-          },
-        });
-        return;
-      }
-      transferFile.task = `dcu -n "${envUrl}" -k ${envKey} -r "${pathInfo.fullPath}"`;
-      dcu.runCommand(
-        transferFile,
-        env,
-        {
-          componentName: fileName,
-          destEnv: dest,
-        },
-        null,
-        null
-      );
-    });
-    vscode.commands.registerCommand("dcu.x", async (externalFile) => {
-      let editor = vscode.window.visibleTextEditors.find((editor) => {
-        return editor.document.languageId != CONSTANTS.EDITORS.LOG;
-      });
-      let env, command;
-      if (editor || externalFile) {
-        env = dcu.findEnvironment(externalFile);
-        let migrateConfig;
-        if (dcu.getConfig(CONSTANTS.CONFIG.GENERAL, CONSTANTS.CONFIG.PROPS.MIGRATE_CONFIGS) === CONSTANTS.PREGUNTAR) {
-          migrateConfig = await vscode.window.showQuickPick([CONSTANTS.SI, CONSTANTS.NO], {
-            placeHolder: "¿Migrar configuraciones del Widget?",
-          });
-        } else {
-          migrateConfig = dcu.getConfig(CONSTANTS.CONFIG.GENERAL, CONSTANTS.CONFIG.PROPS.MIGRATE_CONFIGS);
-        }
-        command = `dcu -x "${env.componentPath}" ${migrateConfig === CONSTANTS.NO ? " -o " : " "}`;
-      } else {
-        if (vscode.workspace.workspaceFolders.length == 0) {
-          dcu.error("No hay carpetas abiertas");
-          return;
-        }
-        let occFolders = vscode.workspace.workspaceFolders.filter((folder) => {
-          let dir = fs.readdirSync(folder.uri.fsPath);
-          return dir.indexOf(".ccc") != -1;
-        });
-        let item;
-        if (occFolders.length == 0) {
-          dcu.error("Ninguna carpeta abierta posee codigo de OCC");
-          return;
-        } else if (occFolders.length == 1) {
-          item = occFolders[0].name;
-        } else {
-          let options = occFolders.map((folder) => {
-            return folder.name;
-          });
-          item = await vscode.window.showQuickPick(options, {
-            ignoreFocusOut: true,
-            placeHolder: "Seleccione un ambiente a donde migrar el widget",
-          });
-        }
-        if (item) {
-          let comp = await vscode.window.showInputBox({
-            ignoreFocusOut: true,
-            placeHolder: "widgetName/elementName/global/theme/snippet (En widgets y elementos se deben respetar mayusculas y minusculas)",
-            prompt: "Que componente desea migrar?",
-          });
-          if (comp) {
-            let folder;
-            folder = occFolders.find((fold) => {
-              return fold.name == item;
-            });
-            env = dcu.findEnvironment(folder.uri.path);
-            env.componentName = comp;
-            let migrateConfig;
-            if (dcu.getConfig(CONSTANTS.CONFIG.GENERAL, CONSTANTS.CONFIG.PROPS.MIGRATE_CONFIGS) === CONSTANTS.PREGUNTAR) {
-              migrateConfig = await vscode.window.showQuickPick([CONSTANTS.SI, CONSTANTS.NO], {
-                placeHolder: "¿Migrar configuraciones del Widget?",
-              });
-            } else {
-              migrateConfig = dcu.getConfig(CONSTANTS.CONFIG.GENERAL, CONSTANTS.CONFIG.PROPS.MIGRATE_CONFIGS);
-            }
-            if (comp.toUpperCase() == CONSTANTS.COMPONENTS.GLOBAL.toUpperCase() || comp.toUpperCase() == CONSTANTS.COMPONENTS.THEME.toUpperCase() || comp.toUpperCase() == CONSTANTS.COMPONENTS.SNIPPET.toUpperCase()) {
-              command = `dcu -x "${comp.toLocaleLowerCase()}" ${migrateConfig === CONSTANTS.NO ? " -o " : " "}`;
-            } else {
-              let folderInfo = fs.readdirSync(folder.uri.fsPath + "/element");
-              if (folderInfo.indexOf(comp) != -1) {
-                command = `dcu -x "element/${comp}" ${migrateConfig === CONSTANTS.NO ? " -o " : " "}`;
-              } else {
-                let folderInfo = fs.readdirSync(folder.uri.fsPath + "/widget");
-                if (folderInfo.indexOf(comp) != -1) {
-                  command = `dcu -x "widget/${comp}" ${migrateConfig === CONSTANTS.NO ? " -o " : " "}`;
-                } else {
-                  dcu.error("No se encontro el componente");
-                  return;
-                }
-              }
-            }
-          }
-        }
-      }
-      let dest = await vscode.window.showQuickPick(CONSTANTS.ENV.ALL, {
-        placeHolder: "Seleccione el destino",
-      });
-      const envUrl = dcu.getConfig(CONSTANTS.CONFIG[dest], CONSTANTS.CONFIG.PROPS.ENVIROMENT_URL);
-      const envKey = dcu.getConfig(CONSTANTS.CONFIG[dest], CONSTANTS.CONFIG.PROPS.APP_KEY);
-      if (!envKey || !envUrl) {
-        dcu.error({
-          msg: CONSTANTS.MSGS.TRANSFER_ERROR,
-          detail: "No se encontró url o key de destino",
-          replaceOptions: {
-            componentName: env.componentName,
-            destEnv: dest,
-          },
-        });
-        return;
-      }
-      command += ` -n ${envUrl} -k ${envKey}`;
-      transferFolder.task = command;
-      if (env) {
-        vscode.window.visibleTextEditors.forEach((editor) => {
-          editor.document.save();
-        });
-        transferFolder.task = command;
-        dcu.runCommand(
-          transferFolder,
-          env,
-          {
-            componentName: env.componentName,
-            destEnv: dest,
-          },
-          (taskInfo) => {
-            if (taskInfo[CONSTANTS.MGS_TYPES.WARN]) {
-              dcu.warn({
-                msg: "La migración arrojo algunas advertencias",
-                items: ["VER"],
-                callback: () => {
-                  dcu.showOutput();
-                },
-              });
-            }
-          },
-          null
-        );
-      }
-    });
-    async function migrateLayouts(component) {
-      let origin = await vscode.window.showQuickPick(CONSTANTS.ENV.ALL, {
-        ignoreFocusOut: true,
-        placeHolder: "Seleccione el ORIGEN",
-      });
-      let dest = await vscode.window.showQuickPick(CONSTANTS.ENV.ALL, {
-        ignoreFocusOut: true,
-        placeHolder: "Seleccione el DESTINO",
-      });
-      if (origin == dest) {
-        dcu.error("El origen no puede ser igual al destino");
-        return;
-      }
-      let urlOrigin = dcu.getConfig(CONSTANTS.CONFIG[origin], CONSTANTS.CONFIG.PROPS.ENVIROMENT_URL);
-      let keyOrigin = dcu.getConfig(CONSTANTS.CONFIG[origin], CONSTANTS.CONFIG.PROPS.APP_KEY);
-      let urlDest = dcu.getConfig(CONSTANTS.CONFIG[dest], CONSTANTS.CONFIG.PROPS.ENVIROMENT_URL);
-      let keyDest = dcu.getConfig(CONSTANTS.CONFIG[dest], CONSTANTS.CONFIG.PROPS.APP_KEY);
-      if (!urlOrigin || !keyOrigin || !urlDest || !keyDest) {
-        dcu.error("Falta la URL o la APP_KEY del ambiente de ORIGEN o DESTINO");
-        return;
-      }
-      dcu.warn({
-        msg: `Recuerda migrar todos los widgets y las instancias asociadas a ${component ? "este layout" : "los layouts"}, antes de ejecutar la migración`,
-        items: ["CONTINUAR", "CANCELAR"],
-        callback: (res) => {
-          if (res === "CONTINUAR") {
-            let command = `plsu -n "${urlOrigin}" -k "${keyOrigin}" -d "${urlDest}" -a "${keyDest}" -t`;
-            if (component && component != "*") {
-              command += ` -y "${component}" `;
-            } else if (component && component == "*") {
-              command += ` -s `;
-            }
-            if (dcu.getConfig(CONSTANTS.CONFIG.GENERAL, CONSTANTS.CONFIG.PROPS.IGNORE_COMMERCE_VERSION)) {
-              command += " -g";
-            }
-            migrateLayout.task = command;
-            dcu.runCommand(
-              migrateLayout,
-              null,
-              {
-                layoutName: component != "*" ? component : "todos los Layouts",
-                destEnv: dest,
-              },
-              null,
-              null
-            );
-          }
-        },
-      });
-    }
-    vscode.commands.registerCommand("plsu.y", async () => {
-      let component = await vscode.window.showInputBox({
-        ignoreFocusOut: true,
-        placeHolder: "OCS_ProductDetails",
-        prompt: "Que layout desea migrar? (Ingrese * para migrar todos)",
-      });
-      if (component) {
-        migrateLayouts(component);
-      } else {
-        dcu.error({
-          msg: "No se ingreso layout",
-        });
-      }
-    });
-  } catch (e) {
-    vscode.window.showErrorMessage("Error registrando comandos" + e);
-  }
+const buttons = {
+	test: new DcuItem({
+		command: "dcu.test",
+		icon: "callstack-view-session",
+		hidden: true,
+		tooltip: "",
+		type: CONSTANTS.ITEM_TYPES.DOWNLOAD,
+		msg: {
+			start: TEXTS.MSGS.GRAB_START,
+			success: TEXTS.MSGS.GRAB_OK,
+			error: TEXTS.MSGS.GRAB_ERROR,
+			trackingMsg: "Descargaste el ambiente @@envName@@",
+			warn: "",
+		},
+	}),
+	more: new DcuItem({
+		command: "occ.more",
+		icon: "more",
+		tooltip: "Más acciones",
+		type: null,
+		msg: {
+			start: "",
+			success: "",
+			error: "",
+			trackingMsg: "",
+			warn: "",
+		},
+	}),
+	grab: new DcuItem({
+		command: "dcu.grab",
+		icon: "extensions-install-count",
+		tooltip: "Descargar ambiente",
+		hidden: true,
+		type: CONSTANTS.ITEM_TYPES.DOWNLOAD,
+		msg: {
+			start: TEXTS.MSGS.GRAB_START,
+			success: TEXTS.MSGS.GRAB_OK,
+			error: TEXTS.MSGS.GRAB_ERROR,
+			trackingMsg: "Descargaste el ambiente @@envName@@",
+			warn: "",
+		},
+	}),
+	updateWidget: new DcuItem({
+		command: "dcu.e",
+		icon: "extensions-sync-enabled",
+		tooltip: "Actualizar Widget",
+		type: CONSTANTS.ITEM_TYPES.DOWNLOAD,
+		msg: {
+			start: TEXTS.MSGS.REFRESH_STRAT,
+			success: TEXTS.MSGS.REFRESH_OK,
+			error: TEXTS.MSGS.REFRESH_ERROR,
+			trackingMsg: "Descargaste de @@envName@@: \n@@componentName@@",
+			warn: "",
+		},
+	}),
+	putFile: new DcuItem({
+		command: "dcu.t",
+		icon: "chevron-up",
+		tooltip: "Subir archivo",
+		type: CONSTANTS.ITEM_TYPES.UPLOAD,
+		msg: {
+			start: TEXTS.MSGS.PUT_START,
+			success: TEXTS.MSGS.PUT_OK,
+			error: TEXTS.MSGS.PUT_ERROR,
+			trackingMsg: "Subiste a @@envName@@: \n@@fileName@@",
+			warn: "",
+		},
+	}),
+	putFolder: new DcuItem({
+		command: "dcu.m",
+		icon: "fold-up",
+		tooltip: "Subir Widget",
+		type: CONSTANTS.ITEM_TYPES.UPLOAD,
+		msg: {
+			start: TEXTS.MSGS.PUT_ALL_START,
+			success: TEXTS.MSGS.PUT_ALL_OK,
+			error: TEXTS.MSGS.PUT_ALL_ERROR,
+			trackingMsg: "Subiste a @@envName@@: \n@@componentName@@",
+			warn: "",
+		},
+	}),
+	transferFile: new DcuItem({
+		command: "dcu.r",
+		icon: "run",
+		tooltip: "Migrar archivo",
+		type: CONSTANTS.ITEM_TYPES.MIGRATION,
+		msg: {
+			start: TEXTS.MSGS.TRANSFER_START,
+			success: TEXTS.MSGS.TRANSFER_OK,
+			error: TEXTS.MSGS.TRANSFER_ERROR,
+			trackingMsg: "Migraste a @@destEnv@@: \n@@componentName@@",
+			warn: "",
+		},
+	}),
+	transferFolder: new DcuItem({
+		command: "dcu.x",
+		icon: "run-all",
+		tooltip: "Migrar Widget",
+		type: CONSTANTS.ITEM_TYPES.MIGRATION,
+		msg: {
+			start: TEXTS.MSGS.TRANSFER_START,
+			success: TEXTS.MSGS.TRANSFER_OK,
+			error: TEXTS.MSGS.TRANSFER_ERROR,
+			trackingMsg: "Migraste a @@destEnv@@: \n@@componentName@@",
+			warn: "",
+		},
+	}),
+	migrateLayout: new DcuItem({
+		command: "plsu.y",
+		icon: "references",
+		tooltip: "Migrar Layout",
+		hidden: true,
+		type: CONSTANTS.ITEM_TYPES.MIGRATION,
+		msg: {
+			start: TEXTS.MSGS.PLSU_START,
+			success: TEXTS.MSGS.PLSU_OK,
+			error: TEXTS.MSGS.PLSU_ERROR,
+			trackingMsg: "Migraste a @@destEnv@@: \n@@layoutName@@",
+			warn: "",
+		},
+	})
+};
+
+const functions = {
+
+	//#region  DCU
+	grab: async (externalFile) => {
+		try {
+			let folder;
+			let path;
+			if (externalFile) {
+				path = externalFile.path;
+			} else {
+				folder = await infoRequest.pickFolder(TEXTS.GRAB.PICK_GRAB_FOLDER); //TODO MOVE AS CONSTANT
+				if (!folder) return;
+
+				path = folder[0].path;
+			}
+
+			let environment = await dcu.pickEnv();
+			if (environment.errorFlag) {
+				logger.logError(environment.errorMsg);
+				return;
+			}
+
+			environment.basePath = utils.cleanPath(path);
+
+			let command = new Command({
+				name: TEXTS.GRAB.GRAB_TASK,
+				itemBar: buttons.more,
+				messages: buttons.grab.MSGS,
+				cwd: utils.cleanPath(externalFile ? externalFile.path : folder[0].path),
+				task: `dcu -g -c -n ${environment.node.toString()} -k ${environment.key}`,
+				env: environment
+			});
+
+			command.registerMessages({
+				envName: environment.env,
+			});
+
+			command.exec();
+		} catch (e) {
+			logger.postError({
+				source: "dcu.g",
+				error: e.message,
+				stack: e.stack,
+			});
+		}
+	},
+
+	updateWidget: async (externalFile) => {
+		try {
+			let env = new Environment(externalFile, "FOLDER");
+			let component, task;
+			if (!env.errorFlag) {
+				component = await dcu.getComponent(externalFile);
+				if (!component) return;
+
+				task = `dcu -e "${component.relativePath}" -k ${env.key}`;
+			} else {
+				let folder = await infoRequest.pickEnvironmentFolder();
+				if (!folder) return;
+
+				// env = dcu.getEnvironmentInfo(folder);
+				env = folder.environment;
+				if (!env) return;
+
+				component = await dcu.getComponentFromFolder(folder);
+				if (!component) return;
+
+				task = `dcu -e "${component.relativePath}" -k ${env.key}`;
+			}
+
+			let command = new Command({
+				itemBar: buttons.updateWidget,
+				messages: buttons.updateWidget.MSGS,
+				name: TEXTS.UPDATE_COMPONENT.UPDATE_COMPONENT_TASK,
+				task: task,
+				env: env
+			});
+			command.registerMessages({
+				componentName: component.componentName,
+				envName: env.env
+			});
+			command.exec();
+		} catch (e) {
+			logger.postError({
+				source: "dcu.e",
+				error: e.message,
+				stack: e.stack,
+			});
+			return;
+		}
+	},
+
+	putFile: async (externalFile) => {
+		try {
+			let doc = infoRequest.getOpenEditor();
+			if (!doc && !externalFile) {
+				logger.logError(TEXTS.ERRORS.NO_FILE_OPEN, logger.LOG);
+				return;
+			}
+
+			let env = await dcu.getEnvironment(externalFile);
+			if (!env) return;
+
+			let component = await dcu.getComponent(externalFile);
+			if (!component) return;
+
+			let updateAll = await dcu.evaluateConfig(CONSTANTS.CONFIG.DCU.NAME, CONSTANTS.CONFIG.DCU.PROPS.UPDATE_ALL_INSTANCES, component.instanciable);
+			if (updateAll === undefined) return;
+
+			let command = new Command({
+				name: TEXTS.PUT_FILE.PUT_FILE_TASK,
+				itemBar: buttons.putFile,
+				messages: buttons.putFile.MSGS,
+				env: env,
+				task: `dcu ${updateAll ? "-i " : ""} -t "${component.path}" -k ${env.key}`
+			});
+
+			command.registerMessages({
+				componentName: component.componentName,
+				envName: env.env,
+				fileName: component.fileName
+			});
+			command.exec();
+		} catch (e) {
+			logger.postError({
+				source: "dcu.t",
+				error: e.message,
+				stack: e.stack,
+			});
+		}
+	},
+
+	putFolder: async (externalFile) => {
+		try {
+			let componentPath;
+			let doc = infoRequest.getOpenEditor();
+			if (!doc && !externalFile) {
+				let folder = await infoRequest.pickEnvironmentFolder();
+				if (!folder) return;
+
+				componentPath = await dcu.getComponentPath(folder);
+				if (!componentPath) return;
+			}
+
+			let env = await dcu.getEnvironment(externalFile || componentPath);
+			if (!env) return;
+
+			let component = await dcu.getComponent(externalFile || componentPath);
+			if (!component) return;
+
+			let command = new Command({
+				name: TEXTS.PUT_FOLDER.PUT_FOLDER_TASK,
+				itemBar: buttons.putFolder,
+				messages: buttons.putFile.MSGS,
+				env: env,
+				task: `dcu -m "${component.relativePath}" -k ${env.key}`
+			});
+
+			command.registerMessages({
+				componentName: component.componentName,
+				envName: env.env
+			});
+			command.exec();
+		} catch (e) {
+			logger.postError({
+				source: "dcu.m",
+				error: e.message,
+				stack: e.stack,
+			});
+		}
+	},
+
+	transferFile: async (externalFile) => {
+		try {
+			let doc = infoRequest.getOpenEditor();
+			if (!doc && !externalFile) {
+				logger.logError(TEXTS.ERRORS.NO_FILE_OPEN, logger.LOG);
+				return;
+			}
+
+			let env = await dcu.getEnvironment(externalFile);
+			if (!env) return;
+
+			let component = await dcu.getComponent(externalFile);
+			if (!component) return;
+
+			let destEnv = await dcu.getDestination(env.env);
+			if (!destEnv) return;
+
+			let command = new Command({
+				name: TEXTS.TRANSFER_FILE.TRANSFER_FILE_TASK,
+				itemBar: buttons.transferFile,
+				messages: buttons.transferFile.MSGS,
+				env: env,
+				task: `dcu -n ${destEnv.node} -k ${destEnv.key} -r "${component.path}"`
+			});
+
+			command.registerMessages({
+				componentName: component.componentName,
+				destEnv: destEnv.env,
+			});
+			command.exec();
+		} catch (e) {
+			logger.postError({
+				source: "dcu.r",
+				error: e.message,
+				stack: e.stack,
+			});
+		}
+	},
+
+	transferFolder: async (externalFile) => {
+		try {
+			let componentPath;
+			let doc = infoRequest.getOpenEditor();
+			if (!doc && !externalFile) {
+				let folder = await infoRequest.pickEnvironmentFolder();
+
+				componentPath = await dcu.getComponentPath(folder);
+				if (!componentPath) return;
+			}
+
+			let env = await dcu.getEnvironment(externalFile || componentPath);
+			if (!env) return;
+
+			let component = await dcu.getComponent(externalFile || componentPath);
+			if (!component) return;
+
+			let destEnv = await dcu.getDestination(env.env);
+			if (!destEnv) return;
+
+			let migrateConfig = component.isConfigurable ? await dcu.evaluateConfig(CONSTANTS.CONFIG.DCU.NAME, CONSTANTS.CONFIG.DCU.PROPS.MIGRATE_CONFIGS) : false;
+			if (migrateConfig === undefined) return;
+
+			let command = new Command({
+				name: TEXTS.TRANSFER_FOLDER.TRANSFER_FOLDER_TASK,
+				itemBar: buttons.transferFolder,
+				messages: buttons.transferFolder.MSGS,
+				env: env,
+				task: `dcu -n ${destEnv.node} -k ${destEnv.key} -x "${component.relativePath}" ${component.isConfigurable && !migrateConfig ? " -o" : ""}`
+			});
+
+			command.registerMessages({
+				componentName: component.componentName,
+				envName: env.env,
+				destEnv: destEnv.env
+			});
+			command.exec();
+		} catch (e) {
+			logger.postError({
+				source: "dcu.m",
+				error: e.message,
+				stack: e.stack,
+			});
+		}
+	},
+
+	//#endregion DCU
+
+	//#region  PLSU
+	migrateLayouts: async () => {
+		try {
+			let widgetsMigrated = await infoRequest.askTroughNotification({
+				msg: TEXTS.TRANSFER_LAYOUT.WARNING_MIGRATE_WIDGETS,
+				options: [CONSTANTS.CONTINUAR, CONSTANTS.CANCELAR],
+				type: CONSTANTS.MGS_TYPES.WARN,
+			});
+
+			if (!widgetsMigrated || widgetsMigrated == CONSTANTS.CANCELAR) return;
+
+			let origin = await dcu.getOrigin();
+			if (!origin) return;
+
+			let dest = await dcu.getDestination(origin.env);
+			if (!dest) return;
+
+			let plsu = new PLSU({
+				name: TEXTS.TRANSFER_LAYOUT.TRANSFER_LAYOUTS_TASK,
+				destination: dest,
+				origin: origin,
+				env: origin,
+				itemBar: buttons.more,
+				messages: buttons.migrateLayout.MSGS,
+				ignoreCommerceVersion: await dcu.evaluateConfig(CONSTANTS.CONFIG.PLSU.NAME, CONSTANTS.CONFIG.PLSU.PROPS.IGNORE_COMMERCE_VERSION)
+			});
+
+			await plsu.selectLayouts();
+			let msgLayoutName = plsu.buildCommand();
+
+			plsu.registerMessages({
+				layoutName: msgLayoutName,
+				destEnv: dest.env,
+			});
+
+			if (plsu.errorFlag) return;
+
+			await plsu.exec();
+		} catch (e) {
+			logger.postError({
+				source: "plsu.y",
+				error: e.message,
+				stack: e.stack,
+			});
+		}
+	},
+
+	//#endregion PLSU
+
+	//#region CCW
+	createWidget: async (externalFile) => {
+		try {
+			let env;
+			if (!externalFile) {
+				let folder = await infoRequest.pickEnvironmentFolder();
+				if (!folder) return;
+
+				env = await dcu.getEnvironment(folder);
+				if (!env) return;
+			} else {
+				env = await dcu.getEnvironment(externalFile);
+			}
+
+			let widgetName = await infoRequest.showInputBox(TEXTS.WIDGET_CREATION.INPUT_WIDGET_NAME);
+			if (!widgetName) return;
+
+			let useElements = await infoRequest.boolQuickPick(TEXTS.WIDGET_CREATION.REQUIRE_ELEMENTS);
+			if (useElements == undefined) return;
+
+			let locales = [];
+			let localeConfig = utils.getConfig(CONSTANTS.CONFIG.CCW.NAME, CONSTANTS.CONFIG.CCW.PROPS.WIDGET_LANGUAGES);
+
+			if (localeConfig == CONSTANTS.PREGUNTAR) {
+				locales = await infoRequest.quickPickMany(CONSTANTS.LOCALE_LIST, TEXTS.WIDGET_CREATION.CHOOSE_LOCALES);
+			} else if (localeConfig == CONSTANTS.TODOS) {
+				locales = CONSTANTS.LOCALE_LIST;
+			} else {
+				locales = CONSTANTS.LOCALE_LIST_BASIC;
+			}
+
+			let command = new CCW(
+				{
+					itemBar: buttons.more,
+					env: env,
+					cwd: env.basePath,
+					widgetName: widgetName,
+					langs: locales,
+					useElements: useElements,
+					name: TEXTS.WIDGET_CREATION.WIDGET_CREATION_TASK,
+					messages: {
+						start: TEXTS.WIDGET_CREATION.WIDGET_CREATION_START,
+						success: TEXTS.WIDGET_CREATION.WIDGET_CREATION_SUCCESS,
+						error: TEXTS.WIDGET_CREATION.WIDGET_CREATION_FAIL
+					},
+				}
+			);
+
+			await command.createWidget();
+		} catch (e) {
+			logger.postError({
+				source: "ccw.createWidget",
+				error: e.message,
+				stack: e.stack,
+			});
+		}
+	},
+	//#endregion CCW
+
+	//#region MORE
+	copyKey: async () => {
+		try {
+			let env = await dcu.pickEnv();
+			copyPaste.copy(env.key);
+			logger.logAndForceNotification(TEXTS.MORE_FN.KEY_COPPIED, logger.LOG);
+		} catch (e) {
+			logger.postError({
+				source: "copyKey",
+				error: e.message,
+				stack: e.stack,
+			});
+			return;
+		}
+	},
+
+	copyNode: async () => {
+		try {
+			let env = await dcu.pickEnv();
+			copyPaste.copy(env.node.toString());
+			logger.logAndForceNotification(TEXTS.MORE_FN.URL_COPPIED, logger.LOG);
+		} catch (e) {
+			logger.postError({
+				source: "copyNode",
+				error: e.message,
+				stack: e.stack,
+			});
+			return;
+		}
+	},
+
+	feedback: async () => {
+		try {
+			let type = await infoRequest.quickPick(CONSTANTS.FEEDBACK_TYPES.ALL, TEXTS.MORE_FN.CHOOSE_FEEDBACK);
+			if (!type) return;
+
+			let msg = await infoRequest.showInputBox(TEXTS.MORE_FN.MESSAGE);
+			if (!msg) return;
+
+			logger.sendFeedback(msg, type);
+		} catch (e) {
+			logger.postError({
+				source: "feedback",
+				error: e.message,
+				stack: e.stack,
+			});
+			return;
+		}
+	},
+
+	extractLoacales: async (externalFile) => {
+		return new Promise(async (resolve, reject) => {
+			try {
+				// if (checkRunningStatus()) {
+				// 	isRunningCommand = true;
+				let env = new Environment(externalFile, "FOLDER");
+				if (env.errorFlag) return;
+
+				let component;
+				component = await dcu.getComponent(externalFile);
+				if (component.fileName != "configMetadata.json") {
+					logger.logError(TEXTS.ERRORS.SNIPPET_EXTRACTION_WRONG_FILE);
+					reject(false);
+					return;
+				}
+				let doc = infoRequest.getFileContent(externalFile);
+
+				//Busco y obtengo los locales del archivo de config
+				let configFile = JSON.parse(doc);
+				let locales = [];
+				for (var i in configFile.properties) {
+					locales.push(configFile.properties[i].helpTextResourceId);
+					locales.push(configFile.properties[i].labelResourceId);
+				}
+
+				//Elimino los duplicados
+				locales = Array.from(new Set(locales));
+				let newLocales = {
+					resources: {}
+				};
+				locales.forEach(function (locale) {
+					newLocales.resources[locale] = "";
+				});
+
+				const localesFolder = utils.readDir(component.componentAbsolutePath + "/config/locales");
+
+				localesFolder.children.forEach(async (localeFile) => {
+					let contentToWrite;
+					let currentContent = utils.readFile(localeFile.path);
+					if (currentContent) {
+						let currentLocales = JSON.parse(currentContent);
+						let mergedLocales = {
+							resources: {}
+						};
+						mergedLocales.resources = Object.assign({}, newLocales.resources, currentLocales.resources);
+
+						contentToWrite = JSON.stringify(mergedLocales);
+					} else {
+						contentToWrite = JSON.stringify(newLocales);
+					}
+
+					fs.writeFileSync(localeFile.path, contentToWrite);
+				});
+
+				await utils.formatAll(component.componentAbsolutePath + "/config/locales");
+				// await vscode.commands.executeCommand("workbench.action.files.saveAll");
+				resolve(true);
+			} catch (e) {
+				isRunningCommand = false;
+				reject(JSON.stringify(e));
+			}
+		})
+	},
+	//#endregion MORE
+
+	//#region  THIRDPARTY
+	uploadThirdPartyFile: async (externalFile) => {
+		try {
+			let env;
+
+			let file = await infoRequest.pickFile();
+			if (!file) return;
+
+			if (!externalFile) {
+				let folder = await infoRequest.pickEnvironmentFolder();
+				if (!folder) return;
+
+				env = await dcu.getEnvironment(folder);
+				if (!env) return;
+			} else {
+				env = await dcu.getEnvironment(externalFile);
+			}
+			let fileName;
+			let useFileName = await dcu.evaluateConfig(CONSTANTS.CONFIG.THIRD_PARTY.NAME, CONSTANTS.CONFIG.THIRD_PARTY.PROPS.USE_ZIP_NAME);
+			if (useFileName) {
+				fileName = file.path.substring(file.path.lastIndexOf("/") + 1);
+			} else {
+				fileName = await infoRequest.showInputBox(TEXTS.THIRD_PARTY.INPUT_FILE_NAME);
+				if (fileName == undefined) return;
+
+				fileName = fileName || file.path.substring(file.path.lastIndexOf("/") + 1);
+			}
+
+			let siteId = await dcu.getOccSite(env);
+
+			let thirdParty = new ThirdParty({
+				env: env,
+				itemBar: buttons.more,
+				path: file.path,
+				fileName: fileName,
+				base64: utils.convertToBase64(file.path),
+				site: siteId,
+				name: TEXTS.THIRD_PARTY.UPLOAD_FILE_TASK,
+				messages: {
+					start: TEXTS.THIRD_PARTY.UPLOAD_FILE_START,
+					success: TEXTS.THIRD_PARTY.UPLOAD_FILE_SUCCESS,
+					error: TEXTS.THIRD_PARTY.UPLOAD_FILE_FAIL,
+					trackingMsg: TEXTS.THIRD_PARTY.UPLOAD_FILE_TRACKING,
+				}
+			});
+
+			await thirdParty.upload();
+			isRunningCommand = false;
+
+		} catch (e) {
+			logger.postError({
+				source: "dcu.uploadThirdPartyFile",
+				error: e.message,
+				stack: e.stack,
+			});
+		}
+	},
+
+	deleteThirdPartyFiles: async (externalFile) => {
+		try {
+			let env;
+
+			if (!externalFile) {
+				let folder = await infoRequest.pickEnvironmentFolder();
+				if (!folder) return;
+
+				env = await dcu.getEnvironment(folder);
+				if (!env) return;
+			}
+
+			let siteId = await dcu.getOccSite(env);
+			let thirdParty = new ThirdParty({
+				env: env,
+				itemBar: buttons.more,
+				site: siteId,
+				name: TEXTS.THIRD_PARTY.DELETE_FILE_TASK,
+				messages: {
+					start: TEXTS.THIRD_PARTY.DELETE_FILE_START,
+					success: TEXTS.THIRD_PARTY.DELETE_FILE_SUCCESS,
+					error: TEXTS.THIRD_PARTY.DELETE_FILE_FAIL,
+					trackingMsg: TEXTS.THIRD_PARTY.DELETE_FILE_TRACKING,
+				}
+			});
+
+			await thirdParty.delete();
+			isRunningCommand = false;
+		} catch (e) {
+
+		}
+	},
+	//#endregion THIRDPARTY
+
+	//#region SSE
+
+	uploadSSE: async (externalFile) => {
+		try {
+			let env = await dcu.pickEnv();
+
+			let zip;
+			if (externalFile) {
+				zip = externalFile;
+			} else {
+				zip = await infoRequest.pickFile(TEXTS.SSE.INPUT_SSE_FILE, {
+					zip: ["zip"]
+				});
+			}
+
+			let sseName;
+
+			let useZipName = await dcu.evaluateConfig(CONSTANTS.CONFIG.SSE.NAME, CONSTANTS.CONFIG.SSE.PROPS.USE_ZIP_NAME);
+			if (useZipName) {
+				sseName = zip.path.substring(zip.path.lastIndexOf("/") + 1);
+			} else {
+				sseName = await infoRequest.showInputBox(TEXTS.SSE.INPUT_SSE_NAME);
+				if (!sseName) {
+					if (sseName == "") {
+						sseName = zip.path.substring(zip.path.lastIndexOf("/") + 1);
+					}
+					else {
+						return;
+					}
+				}
+			}
+
+			let sse = new SSE({
+				env: env,
+				itemBar: buttons.more,
+				name: sseName,
+				zip
+			});
+
+			if (sse.errorFlag) {
+				logger.logError(sse.errorMsg);
+				return
+			}
+
+			sse.upload();
+		} catch (e) {
+
+		}
+	},
+	downloadSSE: async () => {
+		try {
+			let folder = await infoRequest.pickFolder(TEXTS.SSE.CHOOSE_DOWNLOAD_FOLDER);
+			if (!folder) return;
+
+			let env = await dcu.pickEnv();
+			if (env.errorFlag) {
+				logger.logError(env.errorMsg);
+				return;
+			}
+
+			let sse = new SSE({
+				env: env,
+				itemBar: buttons.more
+			});
+
+			let sseList = await sse.fetchSSE();
+			let selectedSSE = await infoRequest.quickPick(sseList, TEXTS.SSE.CHOOSE_DOWNLOAD_SSE);
+
+			sse.downloadSSE(selectedSSE, utils.cleanPath(folder[0].path));
+		} catch (e) {
+
+		}
+	},
+	deleteSSE: async () => {
+		try {
+			let env = await dcu.pickEnv();
+			if (env.errorFlag) {
+				logger.logError(env.errorMsg);
+				return;
+			}
+
+			let sse = new SSE({
+				env: env,
+				itemBar: buttons.more,
+
+			});
+
+			let sseList = await sse.fetchSSE();
+			let selectedSSE = await infoRequest.quickPick(sseList, TEXTS.SSE.CHOOSE_SSE_TO_DELETE);
+			if (!selectedSSE) return;
+
+			sse.delete(selectedSSE);
+
+		} catch (e) {
+
+		}
+	}
+
+	//#endregion SSE
+};
+
+const checkRunningStatus = () => {
+	if (isRunningCommand) {
+		logger.logInfo("Aún esta corriendo otro proceso");
+		return false;
+	}
+
+	return true;
+}
+
+const registerCommands = () => {
+	try {
+
+
+		vscode.commands.registerCommand("dcu.test", async () => {
+			try {
+
+			} catch (e) {
+
+			}
+		});
+
+		vscode.commands.registerCommand("dcu.e", async (externalFile) => {
+			functions.updateWidget(externalFile);
+		});
+
+		vscode.commands.registerCommand("dcu.grab", async (externalFile) => {
+			functions.grab(externalFile);
+		});
+
+		vscode.commands.registerCommand("dcu.t", async (externalFile) => {
+			functions.putFile(externalFile);
+		});
+
+		vscode.commands.registerCommand("dcu.m", async (externalFile) => {
+			functions.putFolder(externalFile);
+		});
+
+		vscode.commands.registerCommand("dcu.r", async (externalFile) => {
+			functions.transferFile(externalFile);
+		});
+
+		vscode.commands.registerCommand("dcu.x", async (externalFile) => {
+			functions.transferFolder(externalFile);
+		});
+
+		vscode.commands.registerCommand("plsu.y", async () => {
+			functions.migrateLayouts();
+		});
+
+		vscode.commands.registerCommand("ccw.w", async (externalFile) => {
+			functions.createWidget(externalFile);
+		});
+
+		vscode.commands.registerCommand("occ.u", async () => {
+			functions.uploadThirdPartyFile();
+		});
+
+		vscode.commands.registerCommand("occ.d", async () => {
+			functions.deleteThirdPartyFiles();
+		});
+
+		vscode.commands.registerCommand("occ.k", async () => {
+			functions.copyKey();
+		});
+
+		vscode.commands.registerCommand("occ.n", async () => {
+			functions.copyNode();
+		});
+
+		vscode.commands.registerCommand("occ.f", async () => {
+			functions.feedback();
+		});
+
+		vscode.commands.registerCommand("occ.l", async (externalFile) => {
+			functions.extractLoacales(externalFile);
+		});
+
+		vscode.commands.registerCommand("occ.s", async (externalFile) => {
+			functions.uploadSSE(externalFile);
+		});
+
+		vscode.commands.registerCommand("occ.more", async () => {
+			try {
+				const actions = {};
+				actions[CONSTANTS.ACTIONS.PLSU] = functions.migrateLayouts;
+				actions[CONSTANTS.ACTIONS.CCW] = functions.createWidget;
+				actions[CONSTANTS.ACTIONS.THIRD] = functions.uploadThirdPartyFile;
+				actions[CONSTANTS.ACTIONS.DEL_THIRD] = functions.deleteThirdPartyFiles;
+				actions[CONSTANTS.ACTIONS.GRAB] = functions.grab;
+				actions[CONSTANTS.ACTIONS.KEY] = functions.copyKey;
+				actions[CONSTANTS.ACTIONS.NODE] = functions.copyNode;
+				actions[CONSTANTS.ACTIONS.FEEDBACK] = functions.feedback;
+				actions[CONSTANTS.ACTIONS.SNIPPETS] = functions.extractLoacales;
+				actions[CONSTANTS.ACTIONS.SSE_DOWNLOAD] = functions.downloadSSE;
+				actions[CONSTANTS.ACTIONS.SSE_UPLOAD] = functions.uploadSSE;
+				actions[CONSTANTS.ACTIONS.SSE_DELETE] = functions.deleteSSE;
+
+				let action = await infoRequest.quickPick(CONSTANTS.ACTIONS.ALL,TEXTS.MORE_FN.CHOOSE_ACTION);
+				if (!action) return;
+
+				action = action.substring(action.lastIndexOf(")") + 2);
+				if (actions[action]) actions[action]();
+			} catch (e) {
+				logger.postError({
+					source: "dcu.more",
+					error: e.message,
+					stack: e.stack,
+				});
+			}
+		});
+
+		for (var i in buttons) {
+			if (!buttons[i].hidden) {
+				buttons[i].show();
+			}
+		}
+	} catch (e) {
+		vscode.window.showErrorMessage("FATAL ERROR");
+		logger.postError({
+			source: "registerCommands",
+			error: e.message,
+			stack: e.stack,
+		});
+	}
 }
 /**
  * @param {vscode.ExtensionContext} context
  */
 async function activate(context) {
-  try {
-    // let itemBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 1);
-    // itemBar.text="DEBUG";
-    STORAGE = context.workspaceState;
-    registerCommands();
-    // STORAGE.update(CONSTANTS.STORAGE.VERSION, "2.0.3");
-    dcu.validateVersion(STORAGE);
-    dcu.initializeFileTracking();
-
-    const child_proccess = require("child_process");
-
-    let child = child_proccess.spawn("dir", [], { cwd: ".." });
-
-    child.stdout.on("data", (data) => {
-      console.log(data);
-    });
-
-    child.on("error", (error) => {
-      console.error(error);
-    });
-  } catch (e) {
-    vscode.window.showErrorMessage("Error activando:" + e);
-  }
+	try {
+		STORAGE = context.workspaceState;
+		dcu.init(STORAGE);
+		registerCommands();
+	} catch (e) {
+		vscode.window.showErrorMessage("Error activando:" + e);
+	}
 }
 exports.activate = activate;
