@@ -282,9 +282,15 @@ const renameFile = (path, newName) => {
 }
 
 const getOpenEditor = () => {
-	let result = vscode.window.visibleTextEditors.find((editor) => {
-		return editor.document.languageId != CONST.EDITORS.LOG;
-	});
+	// let result = vscode.window.visibleTextEditors.find((editor) => {
+	// 	return editor.document.languageId != CONST.EDITORS.LOG;
+	// });
+
+	let result =  vscode.window.activeTextEditor;
+
+	if(result.document.languageId == CONST.EDITORS.LOG){
+		return; 
+	}
 
 	return result;
 }

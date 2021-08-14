@@ -112,6 +112,11 @@
 					"default": true,					
 					"description": "Si se produce un error, muestra un mensaje para copiar el comando ejecutado al portapapeles"
 				},
+				"dcu.1.dcu.useInternalFoldersOnGrab":{
+					"type":"boolean",
+					"default": false,
+					"description": "Al realizar un GRAB desde la botonera, el mismo solo se podrá ejecutar en una de las carpetas raiz del workspace. Si esta opción no está seleccionada, se solicitará el destino del GRAB a traves de un selector de carpetas."
+				},
 
 				"dcu.1.general.fetchLayouts": {
 					"type": "boolean",

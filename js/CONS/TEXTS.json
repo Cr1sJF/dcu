@@ -12,7 +12,7 @@
 	"LOAD_COMPONENT":"Cargue un componente",
 	"LOAD_COMPONENT_PLACEHOLDER":"widgetName/elementName/global/theme/snippet",
 	"ERRORS": {
-		"NO_FILE_OPEN": "No se encontro un archivo abierto",
+		"NO_FILE_OPEN": "No se encontro un archivo abierto y/o valido",
 		"SNIPPET_EXTRACTION_WRONG_FILE": "La extracción de snippets solo funciona en archivos 'configMetadata.json'",
 		"NO_ENV_VALID_CONFIG":"No se encontró una configuracion valida para el ambiente seleccionado",
 		"MISSING_COMPONENT":"No se encontró el componente"

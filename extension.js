@@ -152,10 +152,18 @@ const functions = {
 			if (externalFile) {
 				path = externalFile.path;
 			} else {
-				folder = await infoRequest.pickFolder(TEXTS.GRAB.PICK_GRAB_FOLDER); //TODO MOVE AS CONSTANT
-				if (!folder) return;
+				let useInternalFolders = await dcu.evaluateConfig(CONSTANTS.CONFIG.DCU.NAME, CONSTANTS.CONFIG.DCU.PROPS.INTERNAL_FOLDERS_ON_GRAB);
 
-				path = folder[0].path;
+				if(useInternalFolders){
+					folder = await infoRequest.pickInternalFolder();
+				}else{
+					folder = await infoRequest.pickFolder(TEXTS.GRAB.PICK_GRAB_FOLDER); //TODO MOVE AS CONSTANT
+					if (!folder) return;
+					
+				}
+				
+				path = typeof folder == "string" ? folder : folder[0].path;
+
 			}
 
 			let environment = await dcu.pickEnv();
@@ -170,7 +178,7 @@ const functions = {
 				name: TEXTS.GRAB.GRAB_TASK,
 				itemBar: buttons.more,
 				messages: buttons.grab.MSGS,
-				cwd: utils.cleanPath(externalFile ? externalFile.path : folder[0].path),
+				cwd: utils.cleanPath(externalFile ? externalFile.path : path),
 				task: `dcu -g -c -n ${environment.node.toString()} -k ${environment.key}`,
 				env: environment
 			});
@@ -752,8 +760,16 @@ const functions = {
 				env: env,
 				itemBar: buttons.more,
 				name: sseName,
+				messages:{
+					error: "Error subiendo la SSE",
+					start: "Subiendo SSE...",
+					success: "SSE Subida correctamente",
+					trackingMsg: `Subiste ${sseName} a ${env.env}`
+				},
 				zip
 			});
+
+
 
 			if (sse.errorFlag) {
 				logger.logError(sse.errorMsg);

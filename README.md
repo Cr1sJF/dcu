@@ -63,6 +63,7 @@ Para configurar la extensión, nos dirigimos a su apartado dentro de las configu
 |copyCommand     | Permite copiar el comando ejectuado, si el mismo da error        | SI        |
 |updateAllInstances     | Al subir un archivo base, actualiza todas las instancias del mismo        | PREGUNTAR        |
 |migrateConfigOnTransfer     | Al migrar un componente, también migrará las configuraciones del mismo        |PREGUNTAR         |
+|useInternalFoldersOnGrab     | Al hacer un GRAB, limita la seleccion de carpetas a las que se encuentren abiertas en el workspace        |NO         |
 
 #### Configuraciones de PLSU
 

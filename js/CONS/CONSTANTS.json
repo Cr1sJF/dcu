@@ -94,7 +94,8 @@
 			"PROPS":{
 				"UPDATE_ALL_INSTANCES": "updateAllInstances",
 				"MIGRATE_CONFIGS": "migrateConfigOnTransfer",
-				"COPY_COMMAND":"copyCommand"
+				"COPY_COMMAND":"copyCommand",
+				"INTERNAL_FOLDERS_ON_GRAB":"useInternalFoldersOnGrab"
 			}
 		},
 		"PLSU":{

@@ -16,6 +16,13 @@ const pickFolder = async (title) => {
 	return resp;
 };
 
+const pickInternalFolder = async (title) => {
+	let folders = vscode.workspace.workspaceFolders.map(folder => utils.cleanPath(folder.uri.path));
+	let resp = await quickPick(folders, "Seleccione una carpeta");
+
+	return resp;
+};
+
 const pickFile = async (title, filters) => {
 	let resp = await vscode.window.showOpenDialog({
 		canSelectFolders: false,
@@ -96,7 +103,7 @@ const pickEnvironmentFolder = async () => {
 	if (options.length == 1) {
 		return folders[options[0]];
 	}
-	let response = await quickPick(options, TEXTS.PICK_OCC_FOLDER); 
+	let response = await quickPick(options, TEXTS.PICK_OCC_FOLDER);
 	return folders[response];
 };
 
@@ -148,5 +155,6 @@ module.exports = {
 	showInputBox,
 	askTroughNotification,
 	boolQuickPick,
-	getFileContent
+	getFileContent,
+	pickInternalFolder
 };
