@@ -37,7 +37,7 @@ const buttons = {
 	more: new DcuItem({
 		command: "occ.more",
 		icon: "more",
-		tooltip: "Más acciones",
+		tooltip: "Más acciones (ctrl+[space])",
 		type: null,
 		msg: {
 			start: "",
@@ -50,7 +50,7 @@ const buttons = {
 	grab: new DcuItem({
 		command: "dcu.grab",
 		icon: "extensions-install-count",
-		tooltip: "Descargar ambiente",
+		tooltip: "Descargar ambiente (ctrl+alt+g)",
 		hidden: true,
 		type: CONSTANTS.ITEM_TYPES.DOWNLOAD,
 		msg: {
@@ -62,7 +62,7 @@ const buttons = {
 		},
 	}),
 	updateWidget: new DcuItem({
-		command: "dcu.e",
+		command: "dcu.e (ctrl+alt+e)",
 		icon: "extensions-sync-enabled",
 		tooltip: "Actualizar Widget",
 		type: CONSTANTS.ITEM_TYPES.DOWNLOAD,
@@ -75,7 +75,7 @@ const buttons = {
 		},
 	}),
 	putFile: new DcuItem({
-		command: "dcu.t",
+		command: "dcu.t (ctrl+alt+t)",
 		icon: "chevron-up",
 		tooltip: "Subir archivo",
 		type: CONSTANTS.ITEM_TYPES.UPLOAD,
@@ -88,7 +88,7 @@ const buttons = {
 		},
 	}),
 	putFolder: new DcuItem({
-		command: "dcu.m",
+		command: "dcu.m (ctrl+alt+m)",
 		icon: "fold-up",
 		tooltip: "Subir Widget",
 		type: CONSTANTS.ITEM_TYPES.UPLOAD,
@@ -101,7 +101,7 @@ const buttons = {
 		},
 	}),
 	transferFile: new DcuItem({
-		command: "dcu.r",
+		command: "dcu.r (ctrl+alt+r)",
 		icon: "run",
 		tooltip: "Migrar archivo",
 		type: CONSTANTS.ITEM_TYPES.MIGRATION,
@@ -114,7 +114,7 @@ const buttons = {
 		},
 	}),
 	transferFolder: new DcuItem({
-		command: "dcu.x",
+		command: "dcu.x (ctrl+alt+r)",
 		icon: "run-all",
 		tooltip: "Migrar Widget",
 		type: CONSTANTS.ITEM_TYPES.MIGRATION,
