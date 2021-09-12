@@ -71,6 +71,7 @@ Para configurar la extensión, nos dirigimos a su apartado dentro de las configu
 |---------|---------|---------|
 |fetchLayouts     | Listará los layouts disponibles en el ambiente de origen        |   SI      |
 |ignoreCommerceVersion     |  Se ignora la version de OCC al migrar Layouts       |    SI     |
+|preserveMetadata     |  Al migrar un Layout, se evita modificar la metadata del mismo (solo funciona si 'fetchLayouts' esta activo)       |    SI     |
 
 #### Configuraciones de CCW
 

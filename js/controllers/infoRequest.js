@@ -119,6 +119,14 @@ const getOpenEditor = () => {
 	return editor ? editor.document : null;
 };
 
+/**
+ * 
+ * @param {Object} 			data 			- Configuration
+ * @param {String} 			data.msg 		- Message to display in the notification
+ * @param {Array | String} 	[data.options]	- Option to choose in the message
+ * @param {String}			[data.type]		- Notification Type (INFO, WARN, ERROR)
+ * @returns 
+ */
 const askTroughNotification = async (data) => {
 	let response = await notifier.notify(
 		{
@@ -143,6 +151,21 @@ const getFileContent = (file) => {
 	}
 }
 
+const copyToClipboard = async (message, content, type) =>{
+	let resp = await askTroughNotification({
+		msg: message,
+		options: CONSTANTS.COPIAR,
+		type: type
+	});
+
+	if(resp == CONSTANTS.COPIAR){
+		utils.copyToClipboard(content);
+		notifier.notify({
+			msg:TEXTS.CONTENT_COPIED			
+		});
+	}
+}
+
 module.exports = {
 	pickFolder,
 	pickFile,
@@ -156,5 +179,6 @@ module.exports = {
 	askTroughNotification,
 	boolQuickPick,
 	getFileContent,
-	pickInternalFolder
+	pickInternalFolder,
+	copyToClipboard
 };

@@ -15,6 +15,8 @@ class Task {
 	 * @param {String} 					[data.name] 				- The task name
 	 * @param {import("./Environment")} data.env 					- The environment where is running the task,
 	 * @param {import("./DcuItemBar")} 	data.itemBar 				- The item bar asociated to the task. Provides functions such as ToggleSpinner
+	 * @param {Function}				[data.successCallback]		- Function to execute when commands succeeds
+	 * @param {Function}				[data.failCallback]			- Function to execute when commands fails
 	 * @param {Object}					[data.messages]				- Notification messages
 	 * @param {String}					data.messages.start			- Notification message for task init
 	 * @param {String}					data.messages.success		- Notification message for task success
@@ -37,6 +39,9 @@ class Task {
 				warn: data.messages.warn || ""
 			};
 		}
+
+		this.successCallback = data.successCallback;
+		this.failCallback = data.failCallback;
 
 	}
 
@@ -124,7 +129,7 @@ class Task {
 	 * Logs successfull executed task
 	 */
 	logSuccess() {
-		fileTracking.track(this.messages.tracking );
+		fileTracking.track(this.messages.tracking);
 		logger.logResultAndWarn(CONST.STATUS.SUCCESS);
 		logger.log({ text: 0, type: logger.END_SECTION });
 	}
@@ -170,20 +175,34 @@ class Task {
 					cwd: options.cwd || this.env.basePath
 				});
 
-				cmd.run().then((response) => {
+				cmd.run().then(async (response) => {
 					var taskInfo = this.analyzeResponse(response);
 
 					if (taskInfo.STATUS == CONST.STATUS.SUCCESS) {
+
+						if (this.successCallback) {
+							await this.successCallback();
+						}
+
 						task.taskSuccess();
 						resolve(taskInfo);
 					} else if (taskInfo.STATUS == CONST.STATUS.FAIL) {
+						if (this.failCallback) {
+							await this.failCallback();
+						}
 						task.taskFailed();
 						reject(taskInfo);
 					} else if (taskInfo.STATUS == CONST.STATUS.WARN) {
+						if (this.successCallback) {
+							await this.successCallback();
+						}
 						task.taskWarn();
 						resolve(taskInfo);
 					}
-				}).catch((error) => {
+				}).catch(async (error) => {
+					if (this.failCallback) {
+						await this.failCallback();
+					}
 					task.taskFailed();
 					reject(error);
 				})

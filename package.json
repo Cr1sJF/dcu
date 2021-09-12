@@ -62,7 +62,6 @@
 					"default": true,
 					"description": "Hablitar seguimiento de archivos"
 				},
-
 				"dcu.1.dcu.updateAllInstances": {
 					"type": "string",
 					"default": "PREGUNTAR",
@@ -109,15 +108,14 @@
 				},
 				"dcu.1.dcu.copyCommand": {
 					"type": "boolean",
-					"default": true,					
+					"default": true,
 					"description": "Si se produce un error, muestra un mensaje para copiar el comando ejecutado al portapapeles"
 				},
-				"dcu.1.dcu.useInternalFoldersOnGrab":{
-					"type":"boolean",
+				"dcu.1.dcu.useInternalFoldersOnGrab": {
+					"type": "boolean",
 					"default": false,
 					"description": "Al realizar un GRAB desde la botonera, el mismo solo se podrá ejecutar en una de las carpetas raiz del workspace. Si esta opción no está seleccionada, se solicitará el destino del GRAB a traves de un selector de carpetas."
 				},
-
 				"dcu.1.general.fetchLayouts": {
 					"type": "boolean",
 					"default": true,
@@ -135,14 +133,23 @@
 				"dcu.1.plsu.fetchLayouts": {
 					"type": "boolean",
 					"default": true,
-					"description": "Cuando se migran layouts, se listarán los disponibles dado el ambiente origen"					
+					"description": "Cuando se migran layouts, se listarán los disponibles dado el ambiente origen"
 				},
 				"dcu.1.plsu.ignoreCommerceVersion": {
 					"type": "boolean",
 					"default": true,
 					"description": "Cuando se migran layouts, se agregara el comando -g para ignorar las versiones de OCC"
 				},
-				
+				"dcu.1.plsu.preserveMetadata": {
+					"type": "string",
+					"default": "NO",
+					"enum": [
+						"PREGUNTAR",
+						"SI",
+						"NO"
+					],
+					"description": "Al migrar un layout, ¿Quieres preservar la metadata (URL, metaTags, seoMetadata, etc.) del ambiente de destino?"
+				},
 				"dcu.1.ccw.widgetLanguages": {
 					"type": "string",
 					"default": "BÁSICOS",
@@ -158,7 +165,6 @@
 					],
 					"description": "¿En que idiomas debe crearse un Widget?"
 				},
-
 				"dcu.1.sse.useZipName": {
 					"type": "boolean",
 					"default": false,
@@ -169,7 +175,6 @@
 					"default": false,
 					"description": "Al subir una ThirdPartyFile, utilizar el nombre del archivo como nombre de la ThirdPartyFile"
 				},
-
 				"dcu.2.dev.enviromentUrl": {
 					"type": "string",
 					"description": "Ingresa la URL del ambiente DEV",

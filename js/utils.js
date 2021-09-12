@@ -4,6 +4,8 @@ const fs = require("fs");
 const { URL } = require("url");
 const CONST = require("./CONS/CONSTANTS.json");
 const nls = require("vscode-nls");
+const copyPaste = require("copy-paste");
+
 // const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 const localize = nls.config({
 	messageFormat: nls.MessageFormat.file
@@ -334,6 +336,10 @@ const translate = (key) => {
 	localize(key);
 }
 
+const copyToClipboard = (content)=>{
+	copyPaste.copy(content);
+}
+
 module.exports = {
 	translate,
 	compare,
@@ -355,5 +361,6 @@ module.exports = {
 	formatFile,
 	initTranslate,
 	renameFile,
-	closeFile
+	closeFile,
+	copyToClipboard
 };

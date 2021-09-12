@@ -113,7 +113,7 @@ const determineContentType = (data) => {
 	} else if (data.query) {
 		return contentTypes.FORM;
 	}
-	return null;
+	return contentTypes.JSON;
 };
 
 const buildPayload = (data) => {
@@ -519,10 +519,13 @@ class OCC {
 			let layouts = [];
 			response.forEach((layoutType) => {
 				layoutType.pageLayouts.forEach((layout) => {
-					layouts.push(layout.layout.displayName);
+					layouts.push({
+						name: layout.layout.displayName,
+						id: layout.layout.repositoryId
+					});
 				});
 			});
-			layouts.unshift("*");
+			// layouts.unshift("*");
 			return layouts;
 		} catch (e) {
 			return e;

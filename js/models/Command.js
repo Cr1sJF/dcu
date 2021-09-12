@@ -2,7 +2,7 @@ const Task = require("./Task");
 
 const infoRequest = require("../controllers/infoRequest");
 const CONST = require("../CONS/CONSTANTS.json");
-const copyPaste = require("copy-paste");
+const TEXTS = require("../CONS/TEXTS.json");
 const evalConfig = require("../controllers/dcu").evaluateConfig;
 
 class Command extends Task {
@@ -23,6 +23,8 @@ class Command extends Task {
 	* @param {String}					[data.task]					- The command to execute in CMD
 	* @param {String}					[data.translation]			- The language to analyze response
 	* @param {String}					[data.cwd]					- Directory where to execute task
+	* @param {Function}					[data.successCallback]		- Function to execute when command is successfull executed
+	* @param {Function}					[data.errorCallback]		- Function to execute when command has failed
 	*/
 	constructor(data) {
 		super(data);
@@ -30,30 +32,33 @@ class Command extends Task {
 		this.translation = data.translation || data.env.lang;
 		this.cwd = data.cwd;
 
+		this.successCallback = data.successCallback;
+		this.errorCallback = data.errorCallback;
+
 		evalConfig(CONST.CONFIG.DCU.NAME, CONST.CONFIG.DCU.PROPS.COPY_COMMAND).then((val) => {
 			this.allowCopy = val;
 		});
 	}
 
 	async copyCommand() {
-		let result = await infoRequest.askTroughNotification({
-			msg: "Error ejecutando el comando", //TODO MOVE AS CONSTANT
-			options: "COPIAR COMANDO", //TODO MOVE AS CONSTANT
-			type: CONST.MGS_TYPES.ERROR,
-		});
-		if (result) {
-			copyPaste.copy(this.task);
-		}
+		// let result = await infoRequest.askTroughNotification({
+		// 	msg: "Error ejecutando el comando", //TODO MOVE AS CONSTANT
+		// 	options: "COPIAR COMANDO", //TODO MOVE AS CONSTANT
+		// 	type: CONST.MGS_TYPES.ERROR,
+		// });
+		// if (result) {
+		// }
+		await infoRequest.copyToClipboard(TEXTS.ERRORS.ERROR_RUNNING_TASK_COPY, this.task);
 	}
 
 	exec() {
-		return new Promise((resolve, reject) => {
+		return new Promise(async (resolve, reject) => {
 			try {
 				this.runCmdCommand({
 					task: this.task,
 					cwd: this.cwd || this.env.basePath,
 					skipHeader: false
-				}).then(() => {
+				}).then(async () => {
 					resolve();
 				}).catch(() => {
 					if (this.allowCopy) {
@@ -62,8 +67,12 @@ class Command extends Task {
 					reject();
 				});
 			} catch (e) {
-				this.copyCommand();
-				throw Error(e);
+				if (this.allowCopy) {
+					this.copyCommand();
+				}
+				reject();
+
+				// throw Error(e);
 			}
 		});
 	}

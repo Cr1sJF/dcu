@@ -154,14 +154,14 @@ const functions = {
 			} else {
 				let useInternalFolders = await dcu.evaluateConfig(CONSTANTS.CONFIG.DCU.NAME, CONSTANTS.CONFIG.DCU.PROPS.INTERNAL_FOLDERS_ON_GRAB);
 
-				if(useInternalFolders){
+				if (useInternalFolders) {
 					folder = await infoRequest.pickInternalFolder();
-				}else{
+				} else {
 					folder = await infoRequest.pickFolder(TEXTS.GRAB.PICK_GRAB_FOLDER); //TODO MOVE AS CONSTANT
 					if (!folder) return;
-					
+
 				}
-				
+
 				path = typeof folder == "string" ? folder : folder[0].path;
 
 			}
@@ -231,7 +231,7 @@ const functions = {
 				componentName: component.componentName,
 				envName: env.env
 			});
-			command.exec();
+			await command.exec();
 		} catch (e) {
 			logger.postError({
 				source: "dcu.e",
@@ -433,11 +433,23 @@ const functions = {
 				env: origin,
 				itemBar: buttons.more,
 				messages: buttons.migrateLayout.MSGS,
-				ignoreCommerceVersion: await dcu.evaluateConfig(CONSTANTS.CONFIG.PLSU.NAME, CONSTANTS.CONFIG.PLSU.PROPS.IGNORE_COMMERCE_VERSION)
+				ignoreCommerceVersion: await dcu.evaluateConfig(CONSTANTS.CONFIG.PLSU.NAME, CONSTANTS.CONFIG.PLSU.PROPS.IGNORE_COMMERCE_VERSION),
+				loadLayouts: utils.getConfig(CONSTANTS.CONFIG.PLSU.NAME, CONSTANTS.CONFIG.PLSU.PROPS.FETCH_LAYOUTS),
+				preserveMetadata: await dcu.evaluateConfig(CONSTANTS.CONFIG.PLSU.NAME, CONSTANTS.CONFIG.PLSU.PROPS.PRESERVE_METADATA)
 			});
 
 			await plsu.selectLayouts();
 			let msgLayoutName = plsu.buildCommand();
+
+			if (plsu.preserveMetadata) {
+				if (plsu.loadLayouts) {
+					await plsu.saveMetadata();
+					plsu.successCallback = plsu.restoreMetadata;
+				} else {
+					logger.logAndForceNotification(TEXTS.ERRORS.PRESERVE_METADATA_UNAVAILABLE);
+				}
+
+			}
 
 			plsu.registerMessages({
 				layoutName: msgLayoutName,
@@ -450,8 +462,8 @@ const functions = {
 		} catch (e) {
 			logger.postError({
 				source: "plsu.y",
-				error: e.message,
-				stack: e.stack,
+				error: e ? e.message : "ERROR",
+				stack: e ? e.stack : "ERROR",
 			});
 		}
 	},
@@ -760,7 +772,7 @@ const functions = {
 				env: env,
 				itemBar: buttons.more,
 				name: sseName,
-				messages:{
+				messages: {
 					error: "Error subiendo la SSE",
 					start: "Subiendo SSE...",
 					success: "SSE Subida correctamente",
@@ -930,7 +942,7 @@ const registerCommands = () => {
 				actions[CONSTANTS.ACTIONS.SSE_UPLOAD] = functions.uploadSSE;
 				actions[CONSTANTS.ACTIONS.SSE_DELETE] = functions.deleteSSE;
 
-				let action = await infoRequest.quickPick(CONSTANTS.ACTIONS.ALL,TEXTS.MORE_FN.CHOOSE_ACTION);
+				let action = await infoRequest.quickPick(CONSTANTS.ACTIONS.ALL, TEXTS.MORE_FN.CHOOSE_ACTION);
 				if (!action) return;
 
 				action = action.substring(action.lastIndexOf(")") + 2);

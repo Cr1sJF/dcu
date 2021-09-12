@@ -377,6 +377,8 @@ const evaluateConfig = async (group, config, validatable) => {
 			}
 		}
 
+		result = result ? result : value;
+
 		return result == CONSTANTS.SI ? true : false;
 	} catch (e) {
 		logger.logError(e.message);

@@ -10,6 +10,7 @@
 	"TODOS": "TODOS",
 	"NUEVA": "NUEVA",
 	"NUEVO": "NUEVO",
+	"COPIAR":"COPIAR",
 	"CONTINUAR": "CONTINUAR",
 	"CANCELAR": "CANCELAR",
 	"SOLO_ERRORES": "SOLO ERRORES",
@@ -102,7 +103,8 @@
 			"NAME": "dcu.1.plsu",
 			"PROPS":{
 				"IGNORE_COMMERCE_VERSION": "ignoreCommerceVersion",
-				"FETCH_LAYOUTS": "fetchLayouts"
+				"FETCH_LAYOUTS": "fetchLayouts",
+				"PRESERVE_METADATA":"preserveMetadata"
 			}
 		},
 		"CCW": {
@@ -135,7 +137,8 @@
 			"updateAllInstances": "Estas por subir un archivo base. ¿Quieres actualizar todas las instancias?",
 			"notifyUpdates": "Hay una nueva actualización, ¿Quieres ver las novedades?",
 			"migrateConfigOnTransfer": "¿Migrar configuraciones?",
-			"widgetLanguages": "¿Qué archivos de locales deseas mantenter?"
+			"widgetLanguages": "¿Qué archivos de locales deseas mantenter?",
+			"preserveMetadata": "¿Quieres preservar la metadata del ambiente de destino?"
 		}
 	},
 	"STORAGE": {

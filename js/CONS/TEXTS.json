@@ -3,19 +3,22 @@
 	"NO_ENV_SELECTED": "No se seleccionó ningún ambiente",
 	"CREATE_WIDGET": "Creación de Widget",
 	"STATUS": "STATUS",
-	"CHOOSE_SITE":"Seleccione sitio",
-	"CHOOSE_ORIGIN":"Seleccione el origen",
-	"CHOOSE_DESTINATION":"Seleccione el destino",
+	"CHOOSE_SITE": "Seleccione sitio",
+	"CHOOSE_ORIGIN": "Seleccione el origen",
+	"CHOOSE_DESTINATION": "Seleccione el destino",
 	"ERROR": "ERROR",
-	"CONFIRM_PROD_ACTION":"Esta por realizar una accion en el ambiente de PROD, ¿Continuar?",
-	"PICK_OCC_FOLDER":"Seleccione una carpeta de OCC",
-	"LOAD_COMPONENT":"Cargue un componente",
-	"LOAD_COMPONENT_PLACEHOLDER":"widgetName/elementName/global/theme/snippet",
+	"CONFIRM_PROD_ACTION": "Esta por realizar una accion en el ambiente de PROD, ¿Continuar?",
+	"PICK_OCC_FOLDER": "Seleccione una carpeta de OCC",
+	"LOAD_COMPONENT": "Cargue un componente",
+	"LOAD_COMPONENT_PLACEHOLDER": "widgetName/elementName/global/theme/snippet",
+	"CONTENT_COPIED": "El contenido fue copiado al portapapeles",
 	"ERRORS": {
 		"NO_FILE_OPEN": "No se encontro un archivo abierto y/o valido",
 		"SNIPPET_EXTRACTION_WRONG_FILE": "La extracción de snippets solo funciona en archivos 'configMetadata.json'",
-		"NO_ENV_VALID_CONFIG":"No se encontró una configuracion valida para el ambiente seleccionado",
-		"MISSING_COMPONENT":"No se encontró el componente"
+		"NO_ENV_VALID_CONFIG": "No se encontró una configuracion valida para el ambiente seleccionado",
+		"MISSING_COMPONENT": "No se encontró el componente",
+		"ERROR_RUNNING_TASK_COPY":"Error ejecutando comando. ¿Copiar al portapapeles?",
+		"PRESERVE_METADATA_UNAVAILABLE":"La funcionalidad de \"Preservar Metadata\" solo esta disponible si la carga de layouts esta activa"
 	},
 	"MSGS": {
 		"GRAB_START": "Iniciando grab de @@envName@@...",
@@ -58,7 +61,9 @@
 	},
 	"TRANSFER_LAYOUT": {
 		"WARNING_MIGRATE_WIDGETS": "Antes de continuar, asegurese de haber migrado todos los widgets relacionados",
-		"TRANSFER_LAYOUTS_TASK": "MIGRACIÓN DE LAYOUTS"
+		"TRANSFER_LAYOUTS_TASK": "MIGRACIÓN DE LAYOUTS",
+		"PICK_LAYOUTS": "Seleccione layouts.",
+		"INPUT_LAYOUTS": "Ingrese Layouts separados por \",\" (o * para migrar todos los Layouts)"
 	},
 	"WIDGET_CREATION": {
 		"WIDGET_CREATION_TASK": "Creación de Widget",
@@ -92,20 +97,20 @@
 	"SSE": {
 		"INPUT_SSE_FILE": "Seleccione la SSE para subir",
 		"INPUT_SSE_NAME": "Ingrese el nombre de SSE (Vacío para usar el mismo nombre del archivo .zip)",
-		"CHOOSE_DOWNLOAD_FOLDER":"Seleccione donde guardar el archivo",
-		"CHOOSE_DOWNLOAD_SSE":"Seleccione SSE para descargar",
-		"CHOOSE_SSE_TO_DELETE":"Seleccione SSE para eliminar"
+		"CHOOSE_DOWNLOAD_FOLDER": "Seleccione donde guardar el archivo",
+		"CHOOSE_DOWNLOAD_SSE": "Seleccione SSE para descargar",
+		"CHOOSE_SSE_TO_DELETE": "Seleccione SSE para eliminar"
 	},
-	"INIT_MSGS":{
-		"INITIALIZING":"Iniciando DCU...",
-		"SEARCHING_FOLDERS":"Buscando carpetas de OCC...",
-		"FILTERING_FOLDERS":"Filtrando carpetas...",
+	"INIT_MSGS": {
+		"INITIALIZING": "Iniciando DCU...",
+		"SEARCHING_FOLDERS": "Buscando carpetas de OCC...",
+		"FILTERING_FOLDERS": "Filtrando carpetas...",
 		"LOADING_ENVIRONMENTS": "Cargando Ambientes configurados...",
-		"VALIDATING_VERSION":"Validando versión...",
-		"INITIALIZING_FILE_TRACKING":"Iniciando Tracking de archivos"
+		"VALIDATING_VERSION": "Validando versión...",
+		"INITIALIZING_FILE_TRACKING": "Iniciando Tracking de archivos"
 	},
-	"FILE_TRACKING":{
-		"OUTPUT_NAME":"DCU FILE TRACKING",
-		"SESSION_STARTED":"********* SESIÓN INICIADA **********"
+	"FILE_TRACKING": {
+		"OUTPUT_NAME": "DCU FILE TRACKING",
+		"SESSION_STARTED": "********* SESIÓN INICIADA **********"
 	}
 }
