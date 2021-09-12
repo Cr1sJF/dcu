@@ -157,7 +157,7 @@ La gran mayoria de estos comando disponen de un acceso en la **botonera**, no ob
 
 ---
 
-**OTRAS UTILIDADES**
+**OTRAS UTILIDADES (ctrl+alt+space)**
 Las otras utilidades que ofrece la extensión se encuentran bajo el boton ***Más acciones*** (![more](https://imgur.com/RGQSrrR.png)).
 Al clickear este boton, se listaran las tareas adicionales que se pueden ejecutar. Estas son:
 
