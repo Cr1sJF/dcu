@@ -14,3 +14,4 @@ Se agregó el atajo de teclado a cada tooltip
 
 ## FIXES
 - Se corrigió la identificación del archivo activo cuando se utiliza ventana dividida
+- Se corrigieron los tooltips

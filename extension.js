@@ -62,9 +62,9 @@ const buttons = {
 		},
 	}),
 	updateWidget: new DcuItem({
-		command: "dcu.e (ctrl+alt+e)",
+		command: "dcu.e",
 		icon: "extensions-sync-enabled",
-		tooltip: "Actualizar Widget",
+		tooltip: "Actualizar Widget (ctrl+alt+e)",
 		type: CONSTANTS.ITEM_TYPES.DOWNLOAD,
 		msg: {
 			start: TEXTS.MSGS.REFRESH_STRAT,
@@ -75,9 +75,9 @@ const buttons = {
 		},
 	}),
 	putFile: new DcuItem({
-		command: "dcu.t (ctrl+alt+t)",
+		command: "dcu.t",
 		icon: "chevron-up",
-		tooltip: "Subir archivo",
+		tooltip: "Subir archivo (ctrl+alt+t)",
 		type: CONSTANTS.ITEM_TYPES.UPLOAD,
 		msg: {
 			start: TEXTS.MSGS.PUT_START,
@@ -88,9 +88,9 @@ const buttons = {
 		},
 	}),
 	putFolder: new DcuItem({
-		command: "dcu.m (ctrl+alt+m)",
+		command: "dcu.m",
 		icon: "fold-up",
-		tooltip: "Subir Widget",
+		tooltip: "Subir Widget (ctrl+alt+m)",
 		type: CONSTANTS.ITEM_TYPES.UPLOAD,
 		msg: {
 			start: TEXTS.MSGS.PUT_ALL_START,
@@ -101,9 +101,9 @@ const buttons = {
 		},
 	}),
 	transferFile: new DcuItem({
-		command: "dcu.r (ctrl+alt+r)",
+		command: "dcu.r",
 		icon: "run",
-		tooltip: "Migrar archivo",
+		tooltip: "Migrar archivo (ctrl+alt+r)",
 		type: CONSTANTS.ITEM_TYPES.MIGRATION,
 		msg: {
 			start: TEXTS.MSGS.TRANSFER_START,
@@ -114,9 +114,9 @@ const buttons = {
 		},
 	}),
 	transferFolder: new DcuItem({
-		command: "dcu.x (ctrl+alt+r)",
+		command: "dcu.x",
 		icon: "run-all",
-		tooltip: "Migrar Widget",
+		tooltip: "Migrar Widget (ctrl+alt+x)",
 		type: CONSTANTS.ITEM_TYPES.MIGRATION,
 		msg: {
 			start: TEXTS.MSGS.TRANSFER_START,
