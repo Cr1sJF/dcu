@@ -3,8 +3,11 @@ DCU EXTENSIONS
 BUGS:
 - Grab error no quita spinner -> FIXED
 - Snippet number -> FIXED
-- url env con "/" -> FIXED 
-
+- url env con "/" -> FIXED
+- Fix delete sse -> Fixed
+- Fix download SSE (Traba el archivo); -> Fixed
+- Handle "esc" actions on upload sse
+- Validate config.json exists -> FIXED
 IDEAS:
 
 - Nombre de componentes no caseSensitive -> LISTO
@@ -15,6 +18,11 @@ IDEAS:
 - Menu contextual en carpetas derecha  -> LISTO
 - Soporte para rutas en grab -> LISTO
 - Creacion de widgets, [siteSettings], elemento
+
+- [OPC] Habilitar/Deshabilitar confirmaciones en PROD
+- Migrar subcarpetas
+- Migrar locales
+- 
 
 - Encapsular consultas al usuario  -> LISTO
 - Agregar shortCuts -> LISTO
