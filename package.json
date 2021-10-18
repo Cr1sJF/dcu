@@ -362,6 +362,7 @@
 	},
 	"dependencies": {
 		"@rauschma/stringio": "^1.4.0",
+		"adm-zip": "^0.5.9",
 		"audio-play": "^2.3.1",
 		"axios": "^0.21.1",
 		"boxen": "^5.0.1",

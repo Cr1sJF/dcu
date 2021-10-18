@@ -62,9 +62,9 @@ const notify = async (data, type) => {
 
 	if (data.options) {
 		let response;
-		if(type && type != CONST.MGS_TYPES.INFO){
+		if (type && type != CONST.MGS_TYPES.INFO) {
 			response = await notificationTypes[type || CONST.MGS_TYPES.INFO](data.msg, ...data.options);
-		}else{
+		} else {
 			response = await notificationTypes[type || CONST.MGS_TYPES.INFO](data.msg, data.options);
 		}
 		return response;
@@ -87,6 +87,14 @@ const notifyError = options => {
 		notify(options, CONST.MGS_TYPES.ERROR);
 	}
 }
+
+/**
+ * 
+ * @param {Object} options Configuración del mensaje
+ * @param {String} options.msg Mensaje de la notificación
+ * @param {Array} [options.options] Opciones de la notificación
+ * @param {String} options Mensaje de la notificacion
+ */
 
 const notifyWarning = options => {
 	if (shouldNotify(CONST.MGS_TYPES.WARN)) {

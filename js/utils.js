@@ -5,6 +5,7 @@ const { URL } = require("url");
 const CONST = require("./CONS/CONSTANTS.json");
 const nls = require("vscode-nls");
 const copyPaste = require("copy-paste");
+// const notifier = require("./controllers/notifier");
 
 // const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 const localize = nls.config({
@@ -104,28 +105,35 @@ const replace = (source, replaceWith) => {
 };
 
 const getSiteConfig = (path) => {
-	let rawData = fs.readFileSync(path + "/.ccc/config.json");
-	let envConfig = JSON.parse(rawData.toString());
 	let result = {};
-	result.node = new URL(envConfig.node);
-	result.occVersion = envConfig.commerceCloudVersion;
-	result.dcuVersion = envConfig.packageVersion;
-	result.basePath = path;
-	result.lang = envConfig.grabLocale;
-	result.children = dirTree(path, {
-		normalizePath: true,
-		exclude: /.ccc/,
-	});
-	let settings = getConfig("dcu"); // TODO move as const
 
-	for (let i = 2; i <= 5; i++) {
-		if (JSON.stringify(settings[i]).indexOf(result.node.origin) != -1) {
-			result.settings = CONST.CONFIG[Object.keys(settings[i])[0].toUpperCase()];
-			result.env = Object.keys(settings[i])[0].toUpperCase();
-			result.key = settings[i][result.env.toLowerCase()][CONST.CONFIG.PROPS.APP_KEY];
-			break;
+	try {
+		let rawData = fs.readFileSync(path + "/.ccc/config.json");
+		let envConfig = JSON.parse(rawData.toString());
+		result.node = new URL(envConfig.node);
+		result.occVersion = envConfig.commerceCloudVersion;
+		result.dcuVersion = envConfig.packageVersion;
+		result.basePath = path;
+		result.lang = envConfig.grabLocale;
+		result.children = dirTree(path, {
+			normalizePath: true,
+			exclude: /.ccc/,
+		});
+		let settings = getConfig("dcu"); // TODO move as const
+
+		for (let i = 2; i <= 5; i++) {
+			if (JSON.stringify(settings[i]).indexOf(result.node.origin) != -1) {
+				result.settings = CONST.CONFIG[Object.keys(settings[i])[0].toUpperCase()];
+				result.env = Object.keys(settings[i])[0].toUpperCase();
+				result.key = settings[i][result.env.toLowerCase()][CONST.CONFIG.PROPS.APP_KEY];
+				break;
+			}
 		}
+	} catch (error) {
+		return;
 	}
+
+
 
 	return result;
 };
@@ -288,10 +296,10 @@ const getOpenEditor = () => {
 	// 	return editor.document.languageId != CONST.EDITORS.LOG;
 	// });
 
-	let result =  vscode.window.activeTextEditor;
+	let result = vscode.window.activeTextEditor;
 
-	if(result.document.languageId == CONST.EDITORS.LOG){
-		return; 
+	if (result.document.languageId == CONST.EDITORS.LOG) {
+		return;
 	}
 
 	return result;
@@ -336,7 +344,7 @@ const translate = (key) => {
 	localize(key);
 }
 
-const copyToClipboard = (content)=>{
+const copyToClipboard = (content) => {
 	copyPaste.copy(content);
 }
 

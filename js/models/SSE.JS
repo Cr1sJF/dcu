@@ -238,10 +238,13 @@ class SSE extends Task {
 				logger.doLog("Escribiendo archivo...", true);
 
 				const writer = fs.createWriteStream(this.zipPath);
+
 				zipFile.pipe(writer);
 				writer.on("finish", () => {
 					logger.doLog("Archivo .zip generado correctamente", true);
-
+					writer.close();
+					writer.end();
+					writer.destroy();
 					this.taskSuccess();
 					resolve();
 				});

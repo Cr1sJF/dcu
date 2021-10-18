@@ -806,11 +806,19 @@ const functions = {
 
 			let sse = new SSE({
 				env: env,
-				itemBar: buttons.more
+				itemBar: buttons.more,
 			});
 
 			let sseList = await sse.fetchSSE();
 			let selectedSSE = await infoRequest.quickPick(sseList, TEXTS.SSE.CHOOSE_DOWNLOAD_SSE);
+
+			sse.messages = {
+				error: "Error descargando la SSE",
+				start: "Descargando SSE...",
+				success: "SSE descargada correctamente",
+				warn: "",
+				trackingMsg: `Descargaste ${selectedSSE} desde ${env.env}`
+			};
 
 			sse.downloadSSE(selectedSSE, utils.cleanPath(folder[0].path));
 		} catch (e) {
@@ -834,6 +842,14 @@ const functions = {
 			let sseList = await sse.fetchSSE();
 			let selectedSSE = await infoRequest.quickPick(sseList, TEXTS.SSE.CHOOSE_SSE_TO_DELETE);
 			if (!selectedSSE) return;
+
+			sse.messages = {
+				error: "Error eliminando la SSE",
+				start: "Eliminando SSE...",
+				success: "SSE eliminada correctamente",
+				warn: "",
+				trackingMsg: `Eliminaste ${selectedSSE} de ${env.env}`
+			};
 
 			sse.delete(selectedSSE);
 
